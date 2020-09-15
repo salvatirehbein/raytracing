@@ -17,6 +17,5 @@ r_packages:
 
 after_success:
   - Rscript -e 'library(covr); codecov()'
-  ! grep -R "WARNING" "${RCHECK_DIR}/00check.log"
-
-
+  
+grep -q -R -e "WARNING" -e "ERROR" "${RCHECK_DIR}/00check.log"; RETVAL=$?
