@@ -2,7 +2,7 @@ raytracing
 ================
 
 [![Travis-CI Build
-Status](https://travis-ci.org/salvatirehbein/raytracing.svg?branch=master)](https://travis-ci.com/github/salvatirehbein/raytracing)
+Status](https://img.shields.io/travis/com/salvatirehbein/raytracing?style=for-the-badge)](https://travis-ci.com/github/salvatirehbein/raytracing)
 
 ## Raytracing Documentation
 
