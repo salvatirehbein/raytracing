@@ -1,6 +1,9 @@
 raytracing
 ================
 
+[![Travis-CI Build
+Status](https://travis-ci.org/salvatirehbein/raytracing.svg?branch=master)](https://travis-ci.org/salvatirehbein/raytracing)
+
 ## Raytracing Documentation
 
 `raytracing` package uses Hoskins and Ambrizzi (1993) equations and a
@@ -27,8 +30,7 @@ The `raytracing` include 4 main functions inside the principal program,
 
 ## Example
 
-We reproduced several case studies in order to validate the code. Below
-we present the Rossby wave ray paths for the Coelho et al. (2015) case
-with the stationary Rossby wave number in background.
+The Rossby wave ray paths obtained in Coelho et al. (2015) case with the
+stationary Rossby wave number in background.
 
 ![](README_files/figure-gfm/onda-1.png)<!-- -->
