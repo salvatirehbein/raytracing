@@ -14,9 +14,8 @@ addons:
 
 r_packages:
   - covr
+  - grep -q -R -e "WARNING" -e "ERROR" "${RCHECK_DIR}/00check.log"; RETVAL=$?
 
 after_success:
-  - Rscript -e 'library(covr); codecov()'
-  - grep -q -R -e "WARNING" -e "ERROR" "${RCHECK_DIR}/00check.log"; RETVAL=$?
-  
+  - Rscript -e 'library(covr); codecov()' 
 
