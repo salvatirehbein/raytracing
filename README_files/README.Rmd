@@ -1,0 +1,76 @@
+---
+title: "raytracing"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Raytracing Documentation
+
+```raytracing``` package uses Hoskins and Ambrizzi (1993) equations and a similar methodology of Yang and Hoskins (1996). This document describes how does the ```raytracing``` R package works with examples. 
+
+It is required an initial coordinate pairs that represents the source for the Rossby wave.
+
+## Including Code
+
+The ```raytracing``` include 4 main functions inside the principal program, ```ray```:
+
+```{r funcoes, echo = FALSE}
+library(knitr)
+df <- data.frame(
+  Functions = c("calcUg", "calcVg", "betaks", "ray", "ypos"),
+  Arguments = c("betamz, umz, y, lat, K, w, a", 
+                "betamz, umz, y, lat, K, direction, tl, a",
+                "ifile, varname, latname, lonname, ofile, a, plots, show.warnings",
+                "betamz, umz, lat, x0, y0, K, dt,  itime, direction, tl, a",
+                "y, lat"), 
+  Description = c("Calculates the zonal group velocity", 
+                  "Calculates the meridional group velocity",
+                  "Calculates the stationary Rossby wave number, meridional gradient of the absolute vorticity, and zonal wind in mercator coordinates",
+                  "Calculates the Rossby wave ray paths",
+                  "Obtain the closest position of a latitude in a vector")
+)
+knitr::kable(x = df, caption = "**Table** **1** **-** ```raytracing``` functions and arguments.")
+```
+
+## Example
+
+The Rossby wave ray paths obtained in Coelho et al. (2015) case with the stationary Rossby wave number in background.
+
+```{r onda, echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
+library(raytracing, quietly = TRUE)
+input <- system.file("extdata",
+                     "uwnd.mon.mean_200hPa_2014JFM.nc",
+                     package = "raytracing")
+b <- betaks(ifile = input)
+a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
+         umz = colMeans(b$um, na.rm = TRUE),
+         lat = b$lat,
+         K = 3,
+         itime = 30,
+         x0 = -135 + 360,
+         y0 = -30,
+         dt = 6 * 60 * 60,
+         direction = -1,
+         verbose = FALSE)
+a$x2 <- a$x0 - 360
+library(ggplot2)
+ww <- map_data('world', ylim=c(-60,60))
+
+ggplot() +  theme_bw() +
+  scale_y_continuous(limits = c(-60,60)) +
+  geom_polygon(data = ww,
+               aes(x = long, y = lat, group = group),
+               alpha = 0.0, col = "grey") +
+  geom_point(data = a[!(a$tun_y0 == -1 |
+                          a$tun_y1 == -1 | a$id == 0), ],
+             aes(x = x2, y = y0), size = 3) +
+  geom_line(data = a[!(a$tun_y0 == -1 |
+                         a$tun_y1 == -1 | a$id == 0), ],
+            aes(x = x2, y = y0)) +
+  ggtitle("Coelho et al. (2015):") +
+  ylab(NULL) + xlab(NULL)
+```
+

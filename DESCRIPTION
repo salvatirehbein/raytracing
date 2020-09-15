@@ -1,0 +1,28 @@
+Package: raytracing
+Title: Rossby wave ray tracing
+Version: 0.0.0.9000
+Authors@R: c(person(given = "Amanda",
+                    family = "Rehbein",
+                    role = c("aut", "cre"),
+                    email = "amanda.rehbein@usp.br",
+                    comment = c(ORCID = "0000-0002-8714-7931")),
+             person(given = "Sergio", family = "Ibarra-Espinosa",
+                    role = c("ctb"),   
+                    email = "sergio.ibarra@usp.br",
+                    comment = c(ORCID = "0000-0002-3162-1905")))
+Description: Calculates the atmospheric Rossby wave ray tracks using 
+             zonal symetric flow basic state based on Hoskins and Karoly 
+             (1981) <doi:10.1175/1520-0469(1981)038<1179:TSLROA>2.0.CO;2>,
+             Karoly (1983) <doi:10.1016/0377-0265(83)90013-1>, 
+             Hoskins and Ambrizzi (1993)
+             <doi:10.1175/1520-0469(1993)050<1661:RWPOAR>2.0.CO;2>.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: ncdf4, graphics
+Suggests: 
+    ggplot2,
+    maps,
+    testthat
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
