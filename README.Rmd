@@ -7,7 +7,8 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-[![Travis-CI Build Status](https://travis-ci.org/salvatirehbein/raytracing.svg?branch=master)](https://travis-ci.org/salvatirehbein/raytracing)
+[![Travis-CI Build Status](https://travis-ci.org/salvatirehbein/raytracing.svg?branch=master)](https://travis-ci.com/github/salvatirehbein/raytracing)
+
 
 ## Raytracing Documentation
 
