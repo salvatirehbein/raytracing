@@ -8,13 +8,9 @@ dist: bionic
 
 addons:
   apt:
-    sources:
-      - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'
     packages:
-      - libudunits2-dev
-      - libproj-dev
-      - libgeos-dev
-      - libgdal-dev
+      - libnetcdf-dev
+      - netcdf-bin
 
 r_packages:
   - covr
