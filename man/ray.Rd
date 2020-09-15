@@ -74,7 +74,7 @@ Hoskin and Ambrizzi (1993).
 # For Magana & Ambrizzi (1998):
 input <- system.file("extdata",
                      "uwnd.mon.mean_300hPa_1997-98DJF.nc",
-                      package = "ray")
+                      package = "raytracing")
 b <- betaks(ifile = input)
 a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
                 umz = colMeans(b$um, na.rm = TRUE),
@@ -89,7 +89,7 @@ a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
 # For Coelho et al. (2015):
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
-                      package = "ray")
+                      package = "raytracing")
 b <- betaks(ifile = input)
 a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
                 umz = colMeans(b$um, na.rm = TRUE),

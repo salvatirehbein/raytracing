@@ -24,5 +24,7 @@ Suggests:
     ggplot2,
     maps,
     testthat
+URL: https://github.com/salvatirehbein/raytracing/
+BugReports: https://github.com/salvatirehbein/raytracing/issues/
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1

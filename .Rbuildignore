@@ -1,3 +1,7 @@
 ^raytracing\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^.travis\.yml$
+^README.md$
+^README.Rmd$
+^README_files$

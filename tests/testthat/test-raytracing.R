@@ -8,7 +8,7 @@ test_that("ypos works", {
 # betaks function test ####
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
-                     package = "ray")
+                     package = "raytracing")
 # Test the plots
 b <- betaks(ifile = input, plots = TRUE)
 # Test the if's

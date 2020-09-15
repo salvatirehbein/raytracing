@@ -13,6 +13,14 @@ Calculates the atmospheric Rossby wave ray tracks using
              Hoskins and Ambrizzi (1993)
              <doi:10.1175/1520-0469(1993)050<1661:RWPOAR>2.0.CO;2>.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/salvatirehbein/raytracing/}
+  \item Report bugs at \url{https://github.com/salvatirehbein/raytracing/issues/}
+}
+
+}
 \author{
 \strong{Maintainer}: Amanda Rehbein \email{amanda.rehbein@usp.br} (\href{https://orcid.org/0000-0002-8714-7931}{ORCID})
 
