@@ -1,21 +1,33 @@
 Package: raytracing
-Title: Rossby wave ray tracing
+Title: Rossby Wave Ray Tracing
 Version: 0.0.0.9000
+Date: 2020-09-16
 Authors@R: c(person(given = "Amanda",
                     family = "Rehbein",
                     role = c("aut", "cre"),
                     email = "amanda.rehbein@usp.br",
                     comment = c(ORCID = "0000-0002-8714-7931")),
+             person(given = "Tercio", family = "Ambrizzi",
+                    role = c("sad"),   
+                    email = "tercio.ambrizzi@iag.usp.br"),
              person(given = "Sergio", family = "Ibarra-Espinosa",
                     role = c("ctb"),   
                     email = "sergio.ibarra@usp.br",
-                    comment = c(ORCID = "0000-0002-3162-1905")))
-Description: Calculates the atmospheric Rossby wave ray tracks using 
-             zonal symetric flow basic state based on Hoskins and Karoly 
+                    comment = c(ORCID = "0000-0002-3162-1905")),
+             person(given = "Lívia Márcia Mosso", family = "Dutra",
+                    role = c("rtm"),   
+                    email = "livia.dutra@usp.br"))
+Description: Atmospheric Rossby waves impact climate and weather in remote 
+             regions from their source though teleconection patterns. 
+             This package identifies sources and calculates the possible 
+             ray paths of the Rossby waves in the atmosphere. The theory used 
+             here is based on classical studies, such as Hoskins and Karoly 
              (1981) <doi:10.1175/1520-0469(1981)038<1179:TSLROA>2.0.CO;2>,
              Karoly (1983) <doi:10.1016/0377-0265(83)90013-1>, 
              Hoskins and Ambrizzi (1993)
-             <doi:10.1175/1520-0469(1993)050<1661:RWPOAR>2.0.CO;2>.
+             <doi:10.1175/1520-0469(1993)050<1661:RWPOAR>2.0.CO;2>, 
+             and Yang and Hoskins (1996)
+             <doi.org/10.1175/1520-0469(1996)053<2365:PORWON>2.0.CO;2>.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -23,7 +35,8 @@ Imports: ncdf4, graphics
 Suggests: 
     ggplot2,
     maps,
-    testthat
+    testthat,
+    covr
 URL: https://github.com/salvatirehbein/raytracing/
 BugReports: https://github.com/salvatirehbein/raytracing/issues/
 Roxygen: list(markdown = TRUE)

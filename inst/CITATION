@@ -1,18 +1,16 @@
 citHeader("To cite raytracing in publications use at least the first, if not both:")
 
-citEntry(entry = "article",
-   title          = "TITLE NAME",
-   journal		    = "JOURNAL NAME",
-   author         = personList(person("Amanda", "Rehbein"),
+citEntry(entry = "manual",
+   title          = "raytracing: An R package for identification and tracking the atmospheric Rossby waves",
+   author         = personList(c(person("Amanda", "Rehbein"),
                     person("Tercio", "Ambrizzi"),
                     person("Sergio", "Ibarra-Espinosa"),
-                    person("Livia M. M.", "Dutra")),
+                    person("Livia M. M.", "Dutra"))),
    year           = "2020",
-   url            = "URL",
-   doi            = "DOI",
+   url            = "https://github.com/salvatirehbein/raytracing",
 
    textVersion  =
-   paste("Rehbein, A., Ambrizzi, T., Ibarra-Espinosa, S., Dutra, L. M. M.: TITULO DO ARTIGO, Nome do Journal, VOL, PAGi-PAGf, DOI, 2020.")
+   paste0("Rehbein, A., Ambrizzi, T., Ibarra-Espinosa, S., Dutra, L. M. M.: Rossby Wave Ray Tracing v", packageVersion("raytracing"), ". https://github.com/salvatirehbein/raytracing, 2020.")
 )
 
 citation(auto = meta)

@@ -4,14 +4,19 @@
 \name{raytracing-package}
 \alias{raytracing}
 \alias{raytracing-package}
-\title{raytracing: Rossby wave ray tracing}
+\title{raytracing: Rossby Wave Ray Tracing}
 \description{
-Calculates the atmospheric Rossby wave ray tracks using 
-             zonal symetric flow basic state based on Hoskins and Karoly 
+Atmospheric Rossby waves impact climate and weather in remote 
+             regions from their source though teleconection patterns. 
+             This package identifies sources and calculates the possible 
+             ray paths of the Rossby waves in the atmosphere. The theory used 
+             here is based on classical studies, such as Hoskins and Karoly 
              (1981) <doi:10.1175/1520-0469(1981)038<1179:TSLROA>2.0.CO;2>,
              Karoly (1983) <doi:10.1016/0377-0265(83)90013-1>, 
              Hoskins and Ambrizzi (1993)
-             <doi:10.1175/1520-0469(1993)050<1661:RWPOAR>2.0.CO;2>.
+             <doi:10.1175/1520-0469(1993)050<1661:RWPOAR>2.0.CO;2>, 
+             and Yang and Hoskins (1996)
+             <doi.org/10.1175/1520-0469(1996)053<2365:PORWON>2.0.CO;2>.
 }
 \seealso{
 Useful links:
@@ -26,7 +31,9 @@ Useful links:
 
 Other contributors:
 \itemize{
+  \item Tercio Ambrizzi \email{tercio.ambrizzi@iag.usp.br} [scientific advisor]
   \item Sergio Ibarra-Espinosa \email{sergio.ibarra@usp.br} (\href{https://orcid.org/0000-0002-3162-1905}{ORCID}) [contributor]
+  \item Lívia Márcia Mosso Dutra \email{livia.dutra@usp.br} [research team member]
 }
 
 }

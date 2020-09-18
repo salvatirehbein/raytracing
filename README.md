@@ -3,6 +3,8 @@ raytracing
 
 [![Travis-CI Build
 Status](https://img.shields.io/travis/com/salvatirehbein/raytracing?style=for-the-badge)](https://travis-ci.com/github/salvatirehbein/raytracing)
+[![Codecov test
+coverage](https://codecov.io/gh/salvatirehbein/raytracing/branch/master/graph/badge.svg)](https://codecov.io/gh/salvatirehbein/raytracing?branch=master)
 
 ## Raytracing Documentation
 
@@ -30,7 +32,7 @@ The `raytracing` include 4 main functions inside the principal program,
 
 ## Example
 
-The Rossby wave ray paths obtained in Coelho et al. (2015) case with the
+The Rossby wave ray paths obtained in Coelho et al. (2015) case with the
 stationary Rossby wave number in background.
 
 ![](README_files/figure-gfm/onda-1.png)<!-- -->

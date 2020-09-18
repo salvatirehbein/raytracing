@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 [![Travis-CI Build Status](https://img.shields.io/travis/com/salvatirehbein/raytracing?style=for-the-badge)](https://travis-ci.com/github/salvatirehbein/raytracing)
-
+[![Codecov test coverage](https://codecov.io/gh/salvatirehbein/raytracing/branch/master/graph/badge.svg)](https://codecov.io/gh/salvatirehbein/raytracing?branch=master)
 
 ## Raytracing Documentation
 

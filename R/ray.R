@@ -66,23 +66,19 @@
 #'                 direction = -1)
 #'
 #' # Simple plot:
-#' a$x2 <- a$x0 - 360
 #' library(ggplot2)
 #' ww <- map_data('world', ylim=c(-60,60))
 #'
 #' ggplot() +  theme_bw() +
-#'   scale_y_continuous(limits = c(-60,60)) +
 #'   geom_polygon(data = ww,
 #'                aes(x = long, y = lat, group = group),
 #'                alpha = 0.0, col = "grey") +
 #'   geom_point(data = a[!(a$tun_y0 == -1 |
 #'                           a$tun_y1 == -1 | a$id == 0), ],
-#'              aes(x = x2, y = y0), size = 3) +
-#'   geom_line(data = a[!(a$tun_y0 == -1 |
-#'                          a$tun_y1 == -1 | a$id == 0), ],
-#'             aes(x = x2, y = y0)) +
-#'   ggtitle("") +
-#'   ylab(NULL) + xlab(NULL)
+#'              aes(x = x0 - 360, y = y0), size = 3) +
+#'   labs(x = NULL,
+#'        y = NULL,
+#'        title = NULL)
 #'}
 ray <- function(betamz,
                        umz,
