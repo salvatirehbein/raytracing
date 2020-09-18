@@ -7,3 +7,4 @@
 ^README_files$
 ^codecov\.yml$
 ^paper$
+^paper.md$
