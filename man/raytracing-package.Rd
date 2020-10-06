@@ -6,11 +6,13 @@
 \alias{raytracing-package}
 \title{raytracing: Rossby Wave Ray Tracing}
 \description{
-Atmospheric Rossby waves impact climate and weather in remote 
-             regions from their source though teleconection patterns. 
-             This package identifies sources and calculates the possible 
-             ray paths of the Rossby waves in the atmosphere. The theory used 
-             here is based on classical studies, such as Hoskins and Karoly 
+Rossby wave ray paths are traced from a determined source,
+             specified wavenumber, and direction of propagation.
+             `raytracing` also works with a set of experiments changing 
+             these parameters, making possible the identification of Rossby
+             wave sources automatically.
+             The theory used here is based on classical studies, 
+             such as Hoskins and Karoly 
              (1981) <doi:10.1175/1520-0469(1981)038<1179:TSLROA>2.0.CO;2>,
              Karoly (1983) <doi:10.1016/0377-0265(83)90013-1>, 
              Hoskins and Ambrizzi (1993)

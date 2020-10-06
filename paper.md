@@ -1,39 +1,34 @@
 ---
 title: "Atmospheric Rossby waves identification and tracking with 'raytracing'"
+tags:
+  - R
+  - atmospheric dynamics
+  - Rossby waves
+  - ray tracing
 authors:
-- affiliation: 1
-  name: Amanda Rehbein^[corresponding author - amanda.rehbein@usp.br]
-  orcid: 0000-0002-8714-7931
-- affiliation: 1
-  name: Tercio Ambrizzi
-- affiliation: 1
-  name: Sergio Ibarra-Espinosa
-- affiliation: 1
-  name: Lívia Márcia Mosso Dutra
-date: "15 September 2020"
+  - name: Amanda Rehbein^[corresponding author - amanda.rehbein@usp.br]
+    orcid: 0000-0002-8714-7931 
+    affiliation: 1
+  - name: Tercio Ambrizzi
+    affiliation: 1
+  - name: Sergio Ibarra-Espinosa
+    affiliation: 1
+  - name: Lívia Márcia Mosso Dutra
+    affiliation: 1
+affiliations:
+  - name: Department of Atmospheric Sciences, University of São Paulo, Rua do Matão 1226, São Paulo, SP, Brazil
+    index: 1
 output:
   pdf_document: default
   html_document:
-    df_print: paged
+  df_print: paged
   word_document: default
-tags:
-- R
-- atmospheric dynamics
-- Rossby waves
-- ray tracing
-affiliations:
-- index: 1
-  name: Department of Atmospheric Sciences, University of São Paulo, Rua do Matão
-    1226, São Paulo, SP, Brazil
+date: "18 September 2020"
 bibliography: paper.bib
 ---
 
-old title 
-
-title: 'raytracing: An R package for identification and tracking the atmospheric Rossby waves'
-
 # Summary
-Planetary or atmospheric Rossby waves have large influence on weather and climate around the world. Such influences can happen even far away from the wave sources, through wave patterns that connect the atmosphere in two different regions miles away from each other. An example of this comes from the El Niño Southern Oscillation (ENSO), in which the deep convection over the tropical Pacific ocean trigger disturbances in the atmosphere, leading to planetary waves that are able to travel towards the extratropics  and affect the climate and weather there. Latent heat sources, such as those linked to ENSO, are not the only source for Rossby waves triggering [@HoskinsKaroly1981; @AmbrizziHoskins1997]. Detecting the triggering regions of these waves, their characteristics, where they pass and where they go is of uppermost importance for research, assignment, monitoring and forecasting of weather and climate. Therefore, the detection and tracking of atmospheric Rossby waves is of paramount importance for scientists, climatologists, meteorologists and students seeking for a better understanding of the dynamics of the atmosphere.
+Planetary or atmospheric Rossby waves have large influence on weather and climate around the world. Such influences can happen even far away from the wave sources, through wave patterns that connect the atmosphere in two different regions miles away from each other. An example of this comes from the El Niño Southern Oscillation (ENSO), in which the deep convection over the tropical Pacific ocean triggers disturbances in the atmosphere, leading to planetary waves that are able to travel towards the extratropics  and affect the climate and weather there. Latent heat sources, such as those linked to ENSO, are not the only source for Rossby waves triggering [@HoskinsKaroly1981; @AmbrizziHoskins1997]. Detecting the triggering regions of these waves, their characteristics, where they pass and where they go is of uppermost importance for research, assignment, monitoring and forecasting of weather and climate. Therefore, the detection and tracking of atmospheric Rossby waves is of paramount importance for scientists, climatologists, meteorologists and students seeking for a better understanding of the dynamics of the atmosphere.
 
 The Group of Climate Studies (in Portuguese, GrEC; www.grec.iag.usp.br) is a research group from  the University of São Paulo (USP), Brazil, focused on analyzing the Earth's climatic variability and improving the state-of-the-art knowledge on this topic. In this sense, many research projects and activities developed within GrEC would benefit from the identification and tracking of atmospheric Rossby waves; recent examples include the work of  @Coelhoetal2015 and @Rehbeinetal2018, which investigated the mechanisms that contributed to the occurrence of extreme weather events over South America. The demand for an automated, free, user-friendly and open source model is constant, not only from within GrEC but also from other research groups. Therefore, we developed the R package raytracing to be used by any atmospheric dynamic researcher. The benefits of using R include its worldwide engaged community and its versatility to be installed on multiple operating systems [@R2020]. 
 
@@ -50,13 +45,13 @@ These planetary waves can be approximated to the pure plane waves so that its gr
 \omega = \bar{U}_{M} k  - \frac{\beta_{M}  k}{k^{2} + l^{2}}
 \end{equation}
 
-Where $\bar{U}_{M}$ is the Mercator coordinate time-mean zonal wind, $k$ is the zonal wave number, $\beta_{M}$ is the Mercator coordinate analogous meridional gradient of absolute vorticity ($\beta_{\*}$) times $cos (\phi)$. $\beta_{\*}$ is shown in the Eq. \ref{eq:beta}, and $l$ is the meridional wave number.
+Where $\bar{U}_{M}$ is the Mercator coordinate time-mean zonal wind, $k$ is the zonal wave number, $\beta_{M}$ is the Mercator coordinate analogous meridional gradient of absolute vorticity ($\beta_{*}$) times $cos (\phi)$, and $\phi$ is the latitude, and $l$ is the meridional wave number. Eq. \ref{eq:beta} shows $\beta_{*}$.
 
 \begin{equation} \label{eq:beta}
 \beta_{*} = \frac{d{f}}{d{y}}  - \frac{\partial^2\bar{U}}{\partial{y}^2}
 \end{equation}
 
-From Eq. \ref{eq:omega} ${\bf{c}}_g$, Eq. \ref{eq:cg} is obtained:
+From Eq. \ref{eq:omega}, ${\bf{c}}_g$ is obtained as in Eq. \ref{eq:cg}:
 
 \begin{equation} \label{eq:cg}
 {\bf{c}}_g = (u_g, v_g) = \left(\frac{\partial\omega}{\partial{k}}, \frac{\partial\omega}{\partial{l}}\right)
@@ -72,7 +67,7 @@ u_g = \frac{\omega}{k} - \frac{2 \beta_{M}  k^2}{{(k^{2} + l^{2})}^2}
 v_g = \frac{2  \beta_{M}  k l}{{(k^{2} + l^{2})}^2}
 \end{equation}
 
-Just as in ray optics or geometric optics, @HoskinsKaroly1981 described that planetary waves follow a trajectory or ray perpendicular ahead of waves to any place in the direction of the local ${\bf{c}}_g$. In this way, the ray would be the path through which the energy would propagate at the same speed as ${\bf{c}}_g$. In order to find these rays or trajectories, we followed @YangHoskins1996, using a single-step numerical method to obtain the numerical solutions for Eqs. \ref{eq:dxdt} and \ref{eq:dydt}  given a time interval $\Delta{t}$. This facilitated the validation of the package, comparing the results obtained here with previous results [e.g. @MaganaAmbrizzi2005; @Coelhoetal2015; among others] that also used the methodology described in Yang and Hoskins @YangHoskins1996.
+Just as in ray optics or geometric optics, @HoskinsKaroly1981 described that planetary waves follow a trajectory or ray perpendicular ahead of waves to any place in the direction of the local ${\bf{c}}_g$. In this way, the ray would be the path through which the energy would propagate at the same speed as ${\bf{c}}_g$. In order to find these rays or trajectories, we followed @YangHoskins1996, using a single-step numerical method to obtain the numerical solutions for Eqs. \ref{eq:dxdt} and \ref{eq:dydt}  given a time interval $\Delta{t}$. This facilitated the validation of the package, comparing the results obtained here with previous results [e.g. @MaganaAmbrizzi2005; @Coelhoetal2015, among others] that also used the methodology described in @YangHoskins1996.
 
 \begin{equation} \label{eq:dxdt}
 \mathrm{\frac{dx}{dt}} = u_g 
@@ -84,7 +79,8 @@ Just as in ray optics or geometric optics, @HoskinsKaroly1981 described that pla
 
 @HoskinsKaroly1981 also noticed that for the dispersion equation to be satisfied everywhere, $l$ must vary along the wave trajectory, because if there is not a dependence on $x$ and $t$, then $k$ and $\omega$ must not vary. From the total wavenumber $\mathrm{K}$, the zonal wave number $k$ is obtained: $k = \frac{\mathrm{K}}{a}$, where $a$ is the Earth's radius. 
 
-In the case of a constant $k$ and a $\omega = 0$, stationary Rossby waves emerge with a stationary wave number in Mercator coordinates $\mathrm{K_s}$ given by Eq. \ref{eq:ks} [@HoskinsKaroly1981]. @HoskinsAmbrizzi1993 introduced the $\mathrm{K_s}$ considering Earth's sphericity, as shown in Eq. \ref{eq:ksm}. The stationary phenomena was found largely to explain weather and climate patterns around the world [@HsuLin1992; @Ambrizzietal1995; @MaganaAmbrizzi2005; @Coelhoetal2015, among many others].
+The stationary Rossby waves was found largely to explain weather and climate patterns around the world [@HsuLin1992; @Ambrizzietal1995; @MaganaAmbrizzi2005; @Coelhoetal2015, among many others]. This happen for a constant  $k$ and $\omega = 0$, and a stationary wave number $\mathrm{K_s}$. $\mathrm{K_s}$ can be obtained in Mercator coordinates as in Eq. \ref{eq:ks} [@HoskinsKaroly1981] or considering the Earth’s sphericity as in Eq. \ref{eq:ksm} [@HoskinsAmbrizzi1993].
+
 
 \begin{equation} \label{eq:ks}
 \mathrm{K = K_s = \frac{\beta_{M}}{\bar{U}_M}}
@@ -101,7 +97,7 @@ The exported functions from `raytring` are:
 
 |Function            |Description              | 
 |--------------------|-------------------------|
-|betaks| calculates $\beta_M$, $\mathrm{Ks}$, and $\bar{U}_M$ (Eqs. \ref{eq:beta}, \ref{eq:ks})|
+|betaks| calculates $\beta_M$, $\mathrm{Ks}$, and $\bar{U}_M$|
 |calcUg| resolves Eq. \ref{eq:dxdt}|
 |calcVg| resolves Eq. \ref{eq:dydt}|
 |ray| integrates `betaks`, `calcUg`, and, `calcVg` to obtain Rossby wave ray paths. It requires zonally symmetric basic state|
@@ -147,7 +143,7 @@ ggplot() +  theme_bw() +
   ylab(NULL) + xlab(NULL)
 ```
 
-![Trajectory of Rossby waves](ray.png)
+![Rossby wave tracing, $\mathrm{K = 3}$, wave source coordinates $\mathrm{(x_0 = 135^{\circ}W; y_0 = 30^{\circ} S)}$. Reproduction of the @Coelhoetal2015.](paper/ray.png)
 
 # Acknowledgements
 

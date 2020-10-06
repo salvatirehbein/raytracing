@@ -4,32 +4,32 @@
 \alias{calcVg}
 \title{Calculate the meridional group velocity}
 \usage{
-calcVg(betamz, umz, y, lat, K = 3, direction = -1, tl = 1, a = 6371000)
+calcVg(betamz, Ks2, y, lat, K = 3, direction = -1, tl = 1, a = 6371000)
 }
 \arguments{
 \item{betamz}{meridional gradient of the absolute vorticity
 in Mercator coordinates}
 
-\item{umz}{zonal wind in mercator coordinates}
+\item{Ks2}{Numeric. Stationary Rossby wavenumber}
 
 \item{y}{A latitude}
 
-\item{lat}{numeric vector of latitudes from minor to major}
+\item{lat}{Numeric vector of latitudes from minor to major}
 
-\item{K}{Total Rossby wavenumber}
+\item{K}{Numeric. Total Rossby wavenumber}
 
 \item{direction}{Controls the wave displacement.
 The wave goes to the north of the source using 1 and
 to the south of the source using -1.}
 
-\item{tl}{Turning latitude. It will always start with a
+\item{tl}{Numeric. Turning latitude. It will always start with a
 positive tl and automatically change to negative
 after the turning latitude or before a critical value.}
 
 \item{a}{Earth's radio}
 }
 \value{
-The meridional group velocity
+Numeric.
 }
 \description{
 This function calculates the meridional group velocity.
@@ -40,9 +40,11 @@ input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                       package = "raytracing")
 b <- betaks(ifile = input)
+betam_z <- colMeans(b$betam, na.rm = TRUE)
+um_z <- colMeans(b$um, na.rm = TRUE)
 y0 <- -30
-calcVg(betamz = colMeans(b$betam, na.rm = TRUE),
-       umz = colMeans(b$um, na.rm = TRUE),
+calcVg(betamz = betam_z,
+       Ks2 = betam_z[ypos(y0, b$lat)]/um_z[ypos(y0, b$lat)],
        y = y0,
        lat = b$lat)
 }

@@ -8,12 +8,12 @@ ray_source(
   betamz,
   umz,
   lat,
-  x0 = -(130:132) + 360,
-  y0 = -(16:18),
-  K = c(3, 4, 5),
-  dt = 12 * 60 * 60,
-  itime = 10,
-  direction = c(-1, 1),
+  x0,
+  y0,
+  K,
+  dt,
+  itime,
+  direction,
   tl = 1,
   a = 6371000,
   verbose = FALSE,
@@ -21,31 +21,32 @@ ray_source(
 )
 }
 \arguments{
-\item{betamz}{matrix of (longitude = rows x latitude from minor
-to major = columns) meridional gradient of the absolute vorticity
-in Mercator coordinates. This package includes the
-function \code{\link{betaks}} that import NetCDF files
-using \strong{ncdf4}.}
+\item{betamz}{zonal mean of \strong{betam}. \strong{betam} is a
+matrix (longitude = rows x latitude from minor to major = columns)
+obtained with \code{\link{betaks}}. It is suggested to use
+\code{\link{colMeans}} base R function in order to obtain the
+zonal mean of \strong{betam}.}
 
-\item{umz}{matrix of (longitude = rows x latitude from
-minor to major = columns) zonal wind in mercator coordinates.
-This package includes the  function \code{\link{betaks}}
-that import NetCDF files using \strong{ncdf4}.}
+\item{umz}{zonal mean of \strong{um}. \strong{um} is a
+matrix (longitude = rows x latitude from minor to major = columns)
+obtained with \code{\link{betaks}}. It is suggested to use
+\code{\link{colMeans}} base R function in order to obtain the
+zonal mean of \strong{um}.}
 
 \item{lat}{Numeric vector of latitudes from minor to major
 (ex: -90 to 90)}
 
-\item{x0}{Numeric value; longitude (0 to 360 degrees)}
+\item{x0}{Vector with longitudes (0 to 360 degrees)}
 
-\item{y0}{Numeric value; latitude}
+\item{y0}{Vector with latitudes}
 
-\item{K}{Numeric value; Total Rossby wavenumber}
+\item{K}{Vector; Total Rossby wavenumber}
 
 \item{dt}{Numeric value; Timestep for integration (seconds)}
 
 \item{itime}{Numeric value; total integration time}
 
-\item{direction}{Numeric value (possibilities: 1 or -1).
+\item{direction}{Vector with two possibilities: 1 or -1
 It controls the wave displacement:
 If 1, the wave goes to the north of the source;
 If -1, the wave goes to the south of the source.}
@@ -63,44 +64,32 @@ during compilation}
 for instance, "/user/ray.csv"}
 }
 \value{
-Rossby wave ray paths
+sf data.frame
 }
 \description{
-This function calculates the Rossby waves ray paths based on
-Hoskin and Ambrizzi (1993) in a source area of interest.
-The source area is given bi the combination  of latitudes y0,
-longitudes x0 and wave number K. This means that these numeric
-vectors can have kength bigger than one.
+\code{ray_source} must ingest the zonal means of \strong{betam} and
+\strong{um}, plus the latitude vector (\strong{lat}). \code{ray_source}
+returns the Rossby wave ray paths (lat/lon) triggered according a set of
+experiments. The ray paths will be calculated for the combination
+of initial sources/positions (x0, y0), total wavenumbers (K),
+and directions, using the same basic state given by  \code{\link{betaks}}.
 }
 \examples{
 {
 input <- system.file("extdata",
-                     "uwnd.mon.mean_200hPa_2014JFM.nc",
+                     "uwnd.mon.mean_300hPa_1997-98DJF.nc",
                       package = "raytracing")
 b <- betaks(ifile = input)
-a <- ray_source(betamz = colMeans(b$betam, na.rm = TRUE),
+r1 <- ray_source(betamz = colMeans(b$betam, na.rm = TRUE),
                 umz = colMeans(b$um, na.rm = TRUE),
                 lat = b$lat,
-                direction = -1)
-
+                direction = -1,
+                x0 = -130 + 360,
+                y0 = -17,
+                K = c(5),
+                dt = 12 * 60 * 60,
+                itime = 10*2)
 # Simple plot:
-a$K <- factor(a$K)
-library(ggplot2)
-ww <- map_data('world', ylim=c(-60,60))
 
-ggplot(a, aes(x = x0 - 360,
-              y = y0)) +
-  geom_point(data = a[!(a$tun_y0 == -1 | a$tun_y1 == -1 | a$id == 0), ],
-             aes(x = x0 - 360,
-                 y = y0,
-                 colour = K),
-                 size = 3) +
- theme_bw() +
-  geom_polygon(data = ww,
-               aes(x = long,
-                   y = lat,
-                   group = group),
-                   alpha = 0.0,
-                   col = "grey")
 }
 }

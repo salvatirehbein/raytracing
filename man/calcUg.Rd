@@ -4,26 +4,24 @@
 \alias{calcUg}
 \title{Calculate the zonal group velocity}
 \usage{
-calcUg(betamz, umz, y, lat, K = 3, w = 0, a = 6371000)
+calcUg(betamz, Ks2, y, lat, K = 3, a = 6371000)
 }
 \arguments{
 \item{betamz}{meridional gradient of the absolute vorticity
 in Mercator coordinates}
 
-\item{umz}{zonal wind in mercator coordinates}
+\item{Ks2}{Numeric. Stationary Rossby wavenumber}
 
 \item{y}{A latitude}
 
-\item{lat}{numeric vector of latitudes from minor to major}
+\item{lat}{Numeric vector of latitudes from minor to major}
 
-\item{K}{Total Rossby wavenumber}
-
-\item{w}{wave frequency}
+\item{K}{Numeric. Total Rossby wavenumber}
 
 \item{a}{Earth's radio}
 }
 \value{
-The zonal group velocity
+Numeric.
 }
 \description{
 This function calculates the zonal group velocity.
@@ -34,9 +32,11 @@ input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                       package = "raytracing")
 b <- betaks(ifile = input)
+betam_z <- colMeans(b$betam, na.rm = TRUE)
+um_z <- colMeans(b$um, na.rm = TRUE)
 y0 <- -30
-calcUg(betamz = colMeans(b$betam, na.rm = TRUE),
-       umz = colMeans(b$um, na.rm = TRUE),
+calcUg(betamz = betam_z,
+       Ks2 = betam_z[ypos(y0, b$lat)]/um_z[ypos(y0, b$lat)],
        y = y0,
        lat = b$lat) # 7.039724e-05
 }

@@ -2,18 +2,18 @@
 % Please edit documentation in R/ray.R
 \name{ray}
 \alias{ray}
-\title{Calculate the Rossby waves ray paths}
+\title{Calculates the Rossby waves ray paths}
 \usage{
 ray(
   betamz,
   umz,
   lat,
-  x0 = -130 + 360,
-  y0 = -17,
-  K = 3,
-  dt = 12 * 60 * 60,
-  itime = 10,
-  direction = -1,
+  x0,
+  y0,
+  K,
+  dt,
+  itime,
+  direction,
   tl = 1,
   a = 6371000,
   verbose = FALSE,
@@ -21,16 +21,17 @@ ray(
 )
 }
 \arguments{
-\item{betamz}{matrix of (longitude = rows x latitude from minor
-to major = columns) meridional gradient of the absolute vorticity
-in Mercator coordinates. This package includes the
-function \code{\link{betaks}} that import NetCDF files
-using \strong{ncdf4}.}
+\item{betamz}{zonal mean of \strong{betam}. \strong{betam} is a
+matrix (longitude = rows x latitude from minor to major = columns)
+obtained with \code{\link{betaks}}. It is suggested to use
+\code{\link{colMeans}} base R function in order to obtain the
+zonal mean of \strong{betam}.}
 
-\item{umz}{matrix of (longitude = rows x latitude from
-minor to major = columns) zonal wind in mercator coordinates.
-This package includes the  function \code{\link{betaks}}
-that import NetCDF files using \strong{ncdf4}.}
+\item{umz}{zonal mean of \strong{um}. \strong{um} is a
+matrix (longitude = rows x latitude from minor to major = columns)
+obtained with \code{\link{betaks}}. It is suggested to use
+\code{\link{colMeans}} base R function in order to obtain the
+zonal mean of \strong{um}.}
 
 \item{lat}{Numeric vector of latitudes from minor to major
 (ex: -90 to 90)}
@@ -43,7 +44,8 @@ that import NetCDF files using \strong{ncdf4}.}
 
 \item{dt}{Numeric value; Timestep for integration (seconds)}
 
-\item{itime}{Numeric value; total integration time}
+\item{itime}{Numeric value; total integration time. For instance, 10 days
+times 4 times per day.}
 
 \item{direction}{Numeric value (possibilities: 1 or -1).
 It controls the wave displacement:
@@ -63,57 +65,45 @@ during compilation}
 for instance, "/user/ray.csv"}
 }
 \value{
-Rossby wave ray paths
+sf data.frame
 }
 \description{
-This function calculates the Rossby waves ray paths based on
-Hoskin and Ambrizzi (1993).
+\code{ray} must ingest the zonal means of \strong{betam} and \strong{um},
+plus the latitude vector (\strong{lat}). \code{ray} returns the Rossby wave
+ray paths (lat/lon) triggered from an initial source/position (x0, y0),
+a total wavenumber (K), and direction set up when invoking the function.
 }
 \examples{
 {
-# For Magana & Ambrizzi (1998):
+# For Magana and Ambrizzi (1998):
 input <- system.file("extdata",
                      "uwnd.mon.mean_300hPa_1997-98DJF.nc",
                       package = "raytracing")
 b <- betaks(ifile = input)
-a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
+ma98 <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
                 umz = colMeans(b$um, na.rm = TRUE),
                 lat = b$lat,
                 K = 3,
-                itime = 10,
+                itime = 10*4,
                 x0 = -130 + 360,
                 y0 = -17,
-                dt = 12 * 60 * 60,
+                dt = 6 * 60 * 60,
                 direction = -1)
-
+head(ma98)
 # For Coelho et al. (2015):
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                       package = "raytracing")
 b <- betaks(ifile = input)
-a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
+co2015 <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
                 umz = colMeans(b$um, na.rm = TRUE),
                 lat = b$lat,
                 K = 3,
-                itime = 30,
-                x0 = -135 + 360,
+                itime = 10 * 4,
+                x0 = -130 + 360,
                 y0 = -30,
                 dt = 6 * 60 * 60,
                 direction = -1)
-
-# Simple plot:
-library(ggplot2)
-ww <- map_data('world', ylim=c(-60,60))
-
-ggplot() +  theme_bw() +
-  geom_polygon(data = ww,
-               aes(x = long, y = lat, group = group),
-               alpha = 0.0, col = "grey") +
-  geom_point(data = a[!(a$tun_y0 == -1 |
-                          a$tun_y1 == -1 | a$id == 0), ],
-             aes(x = x0 - 360, y = y0), size = 3) +
-  labs(x = NULL,
-       y = NULL,
-       title = NULL)
+head(co2015)
 }
 }

@@ -17,11 +17,13 @@ Authors@R: c(person(given = "Amanda",
              person(given = "Lívia Márcia Mosso", family = "Dutra",
                     role = c("rtm"),   
                     email = "livia.dutra@usp.br"))
-Description: Atmospheric Rossby waves impact climate and weather in remote 
-             regions from their source though teleconection patterns. 
-             This package identifies sources and calculates the possible 
-             ray paths of the Rossby waves in the atmosphere. The theory used 
-             here is based on classical studies, such as Hoskins and Karoly 
+Description: Rossby wave ray paths are traced from a determined source,
+             specified wavenumber, and direction of propagation.
+             `raytracing` also works with a set of experiments changing 
+             these parameters, making possible the identification of Rossby
+             wave sources automatically.
+             The theory used here is based on classical studies, 
+             such as Hoskins and Karoly 
              (1981) <doi:10.1175/1520-0469(1981)038<1179:TSLROA>2.0.CO;2>,
              Karoly (1983) <doi:10.1016/0377-0265(83)90013-1>, 
              Hoskins and Ambrizzi (1993)
@@ -31,12 +33,13 @@ Description: Atmospheric Rossby waves impact climate and weather in remote
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Imports: ncdf4, graphics
+Imports: ncdf4, graphics, sf, units, utils
 Suggests: 
     ggplot2,
     maps,
     testthat,
-    covr
+    covr,
+    lwgeom
 URL: https://github.com/salvatirehbein/raytracing/
 BugReports: https://github.com/salvatirehbein/raytracing/issues/
 Roxygen: list(markdown = TRUE)

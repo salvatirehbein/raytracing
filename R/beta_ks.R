@@ -1,20 +1,28 @@
-#' Calculate the meridional gradient of the absolute vorticity (beta)
-#' and the stationary Rossby wavenumber (Ks)
+#' Calculates Beta and Ks
 #'
-#' This function calculates the meridional gradient of the absolute
-#'  vorticity (beta), zonal wind (u), and stationary Rossby wave in
-#'  mercator coordinates as in Hoskins & Ambrizzi (1993).
-#'  The input data is zonal wind with latitude in ascending order.
-#' @param ifile Input file name consisting in zonal wind at one pressure
-#' level and one time
-#' @param ofile Output file name
-#' @param varname Zonal wind variable name at a specified level and time
-#' @param latname Latitude variable name
-#' @param lonname Longitude variable name
-#' @param a Earth's radio (m)
+#' \code{betaks} ingests the time-mean zonal wind (u), transform it in
+#' mercator coordinates (um); calculates the meridional gradient of
+#' the absolute vorticity (beta) in mercator coordinates (betam);
+#' and, finally, calculates stationary wavenumber (Ks) in mercator coordinates
+#' (ksm) (see: Hoskins and Ambrizzi, 1993). \code{betaks} returns the um, betam,
+#' and lat, for being ingested in \code{\link{ray}} or
+#' \code{\link{ray_source}}.
+#'
+#' @param ifile String indicating the input data filename. The file to be
+#' passed consists in a netCDF file with only time-mean zonal wind at one
+#' pressure level and with latitude in ascending order (not a requisite).
+#' It is required that the read dimensions express
+#' longitude (in rows) x latitude (in columns)
+#' @param ofile String indicating the file name for store output data.
+#' If missing, will not return a netCDF file.
+#' @param varname String indicating the Variable name of the time-mean
+#' zonal wind field
+#' @param latname String indicating the variable name of the latitude field
+#' @param lonname String indicating the variable name of the longitude field
+#' @param a Numeric indicating the Earth's radio (m)
 #' @param plots Logical, if TRUE will produce filled.countour plots
 #' @param show.warnings Logical, if TRUE will warns about NaNs in sqrt(<0)
-#' @return The meridional group velocity
+#' @return list with one vector (lat) and 3 matrices (um, betam, and ksm)
 #' @importFrom ncdf4 nc_open ncvar_get nc_close ncdim_def ncvar_def
 #'  nc_create ncatt_put
 #' @importFrom graphics filled.contour
@@ -29,7 +37,7 @@
 #' }
 betaks <- function(ifile,
                    varname = "uwnd",   # lat
-                   latname = "lat",   # lon,
+                   latname = "lat",    # lon,
                    lonname = "lon",
                    ofile,
                    a = 6371000,
@@ -127,24 +135,26 @@ betaks <- function(ifile,
   if(plots) graphics::filled.contour(beta_mercator,
                                      main = "Beta Mercator")
 
-  # Ks mercartor #######
-  if(show.warnings) {
-    fks <- function(beta, phirad, u, i, j){
-      a * sqrt(( beta * cos(phirad[i,j])) / u[i,j])
-    }
+  # Ks mercator #######
+  ks_mercator <- matrix(NA, nrow = nrow(u), ncol = ncol(u))
 
-  } else {
-    fks <- function(beta, phirad, u, i, j){
-      a * suppressWarnings(sqrt(( beta * cos(phirad[i,j]))) / u[i,j])
-    }
+  ks_mercator[] <- ifelse(
+    beta_mercator[] < 0 & u[] != 0, -1,
+    ifelse(
+      beta_mercator[] > 0 & u[] < 0, 30,
+      ifelse(
+        beta_mercator[] == 0 | u[] == 0, 0,
+        if(show.warnings) {
+          a * sqrt( (beta_mercator[] * cos(m_phirad[])) / u[])
+        } else {
+            suppressWarnings(a * sqrt( (beta_mercator[] * cos(m_phirad[])) / u[]))
+          }
+      )))
 
-  }
-  ks_mercator <- fks(beta = beta_mercator,
-                     phirad = m_phirad,
-                     u = u,
-                     i = 1:nlon,
-                     j = 1:nlat)
+  ks_mercator[] <- ifelse(ks_mercator[] >= 16, 20, ks_mercator[])
 
+
+  if(plots) graphics::hist(ks_mercator, main = "Ks")
   if(plots) graphics::filled.contour(ks_mercator, main = "Ks")
 
   if(missing(ofile)){

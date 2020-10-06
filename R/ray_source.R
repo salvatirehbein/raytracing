@@ -1,28 +1,30 @@
 #' Calculate the Rossby waves ray paths over a source region
 #'
-#' This function calculates the Rossby waves ray paths based on
-#' Hoskin and Ambrizzi (1993) in a source area of interest.
-#' The source area is given bi the combination  of latitudes y0,
-#' longitudes x0 and wave number K. This means that these numeric
-#' vectors can have kength bigger than one.
+#' \code{ray_source} must ingest the zonal means of \strong{betam} and
+#' \strong{um}, plus the latitude vector (\strong{lat}). \code{ray_source}
+#' returns the Rossby wave ray paths (lat/lon) triggered according a set of
+#' experiments. The ray paths will be calculated for the combination
+#' of initial sources/positions (x0, y0), total wavenumbers (K),
+#' and directions, using the same basic state given by  \code{\link{betaks}}.
 #'
-#' @param betamz matrix of (longitude = rows x latitude from minor
-#' to major = columns) meridional gradient of the absolute vorticity
-#' in Mercator coordinates. This package includes the
-#' function \code{\link{betaks}} that import NetCDF files
-#' using \strong{ncdf4}.
-#' @param umz matrix of (longitude = rows x latitude from
-#' minor to major = columns) zonal wind in mercator coordinates.
-#'  This package includes the  function \code{\link{betaks}}
-#'  that import NetCDF files using \strong{ncdf4}.
-#' @param x0 Numeric value; longitude (0 to 360 degrees)
-#' @param y0 Numeric value; latitude
+#' @param betamz zonal mean of \strong{betam}. \strong{betam} is a
+#' matrix (longitude = rows x latitude from minor to major = columns)
+#' obtained with \code{\link{betaks}}. It is suggested to use
+#' \code{\link{colMeans}} base R function in order to obtain the
+#' zonal mean of \strong{betam}.
+#' @param umz  zonal mean of \strong{um}. \strong{um} is a
+#' matrix (longitude = rows x latitude from minor to major = columns)
+#' obtained with \code{\link{betaks}}. It is suggested to use
+#' \code{\link{colMeans}} base R function in order to obtain the
+#' zonal mean of \strong{um}.
+#' @param x0 Vector with longitudes (0 to 360 degrees)
+#' @param y0 Vector with latitudes
 #' @param lat Numeric vector of latitudes from minor to major
 #'  (ex: -90 to 90)
-#' @param K Numeric value; Total Rossby wavenumber
+#' @param K Vector; Total Rossby wavenumber
 #' @param dt Numeric value; Timestep for integration (seconds)
 #' @param itime Numeric value; total integration time
-#' @param direction Numeric value (possibilities: 1 or -1).
+#' @param direction Vector with two possibilities: 1 or -1
 #' It controls the wave displacement:
 #' If 1, the wave goes to the north of the source;
 #' If -1, the wave goes to the south of the source.
@@ -34,53 +36,40 @@
 #' for instance, "/user/ray.csv"
 #' @param verbose Boolean; if TRUE (default) return messages
 #' during compilation
-#' @return Rossby wave ray paths
+#' @return  sf data.frame
 #' @importFrom utils write.csv
 #' @export
 #' @examples {
 #' input <- system.file("extdata",
-#'                      "uwnd.mon.mean_200hPa_2014JFM.nc",
+#'                      "uwnd.mon.mean_300hPa_1997-98DJF.nc",
 #'                       package = "raytracing")
 #' b <- betaks(ifile = input)
-#' a <- ray_source(betamz = colMeans(b$betam, na.rm = TRUE),
+#' r1 <- ray_source(betamz = colMeans(b$betam, na.rm = TRUE),
 #'                 umz = colMeans(b$um, na.rm = TRUE),
 #'                 lat = b$lat,
-#'                 direction = -1)
-#'
+#'                 direction = -1,
+#'                 x0 = -130 + 360,
+#'                 y0 = -17,
+#'                 K = c(5),
+#'                 dt = 12 * 60 * 60,
+#'                 itime = 10*2)
 #' # Simple plot:
-#' a$K <- factor(a$K)
-#' library(ggplot2)
-#' ww <- map_data('world', ylim=c(-60,60))
 #'
-#' ggplot(a, aes(x = x0 - 360,
-#'               y = y0)) +
-#'   geom_point(data = a[!(a$tun_y0 == -1 | a$tun_y1 == -1 | a$id == 0), ],
-#'              aes(x = x0 - 360,
-#'                  y = y0,
-#'                  colour = K),
-#'                  size = 3) +
-#'  theme_bw() +
-#'   geom_polygon(data = ww,
-#'                aes(x = long,
-#'                    y = lat,
-#'                    group = group),
-#'                    alpha = 0.0,
-#'                    col = "grey")
 #'}
 ray_source <- function(betamz,
                        umz,
                        lat,
-                       x0 = -(130:132) + 360,
-                       y0 = -(16:18),
-                       K = c(3, 4, 5),
-                       dt = 12 * 60 * 60,
-                       itime = 10,
-                       direction = c(-1, 1),
+                       x0,
+                       y0,
+                       K,
+                       dt,
+                       itime,
+                       direction,
                        tl = 1,
                        a = 6371000,
                        verbose = FALSE,
                        ofile){
-
+  # faz combinacao dos x0 e y0
   df <- expand.grid(x0, y0)
   names(df) <- c("lon", "lat")
   dir <- direction
@@ -99,14 +88,15 @@ ray_source <- function(betamz,
                   x0 = df$lon[j],
                   y0 = df$lat[j],
                   verbose = verbose),
-              par = j)
+              par = j # de coordenadas x0 y0
+              )
       })
       do.call("rbind", dwn)
     })
     do.call("rbind", ddf)
   })
 
-  DF <- as.data.frame(do.call("rbind", ddir))
+  DF <- do.call("rbind", ddir)
 
   if(!missing(ofile)) {
     utils::write.csv(x = DF, file = ofile, row.names = FALSE)

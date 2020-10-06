@@ -14,7 +14,9 @@ b <- betaks(ifile = input, plots = TRUE)
 # Test the if's
 
 # Test the netcdf output
-b <- betaks(ifile = input, ofile = tempfile(), show.warnings = TRUE)
+b <- suppressWarnings(betaks(ifile = input,
+                             ofile = tempfile(),
+                             show.warnings = TRUE))
 
 # ray function test ####
 input <- system.file("extdata",
@@ -44,5 +46,8 @@ test_that("ray works", {
                             dt = 6 * 60 * 60,
                             direction = -1,
                             verbose = TRUE),
-                 "x & y differences almost 0")
+                 paste0("|x0 - x2| & |y0 - y2| differences are almost 0 --> ",
+                        "The wave is not propagating. \n",
+                        "Leaving parent while loop 2\n"))
 })
+

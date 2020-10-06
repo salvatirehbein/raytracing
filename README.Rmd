@@ -12,19 +12,26 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Raytracing Documentation
 
-```raytracing``` package uses Hoskins and Ambrizzi (1993) equations and a similar methodology of Yang and Hoskins (1996). This document describes how does the ```raytracing``` R package works with examples. 
+The identification of the atmospheric Rossby wave ray paths is of paramount importance for scientists, climatologists, meteorologists and students seeking for a better understanding of the dynamics of the atmosphere. `raytracing` is designed to detects the triggering regions of Rossby waves, their characteristics, and their paths, in a completely automated way. 
 
-It is required an initial coordinate pairs that represents the source for the Rossby wave.
+It relies on the theory described in:
+
+* [Hoskins and Karoly (1981)](https://journals.ametsoc.org/jas/article/38/6/1179/20507/The-Steady-Linear-Response-of-a-Spherical)
+* [Karoly (1983)](https://www.sciencedirect.com/science/article/abs/pii/0377026583900131)
+* [Hoskins and Ambrizzi (1993)](https://journals.ametsoc.org/jas/article/50/12/1661/23207/Rossby-Wave-Propagation-on-a-Realistic)
+* [Yang and Hoskins (1996)](https://journals.ametsoc.org/jas/article/53/16/2365/24038/Propagation-of-Rossby-Waves-of-Nonzero-Frequency)
+
+For a brief review: Rehbein et al. (2020) <>
 
 ## Including Code
 
-The ```raytracing``` include 4 main functions inside the principal program, ```ray```:
+The ```raytracing``` include the below functions:
 
 ```{r funcoes, echo = FALSE}
 library(knitr)
 df <- data.frame(
   Functions = c("calcUg", "calcVg", "betaks", "ray", "ypos"),
-  Arguments = c("betamz, umz, y, lat, K, w, a", 
+  Arguments = c("betamz, umz, y, lat, K, a", 
                 "betamz, umz, y, lat, K, direction, tl, a",
                 "ifile, varname, latname, lonname, ofile, a, plots, show.warnings",
                 "betamz, umz, lat, x0, y0, K, dt,  itime, direction, tl, a",
@@ -35,12 +42,12 @@ df <- data.frame(
                   "Calculates the Rossby wave ray paths",
                   "Obtain the closest position of a latitude in a vector")
 )
-knitr::kable(x = df, caption = "**Table** **1** **-** ```raytracing``` functions and arguments.")
+knitr::kable(x = df, caption = "**Table** **1** **-** ```raytracing``` functions, arguments, and its description.")
 ```
 
 ## Example
 
-The Rossby wave ray paths obtained in Coelho et al. (2015) case with the stationary Rossby wave number in background.
+Simple usage example, reproduced from [Coelho et al. (2015)](https://link.springer.com/article/10.1007/s00382-015-2800-1).
 
 ```{r onda, echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
 library(raytracing, quietly = TRUE)
@@ -58,7 +65,6 @@ a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
          dt = 6 * 60 * 60,
          direction = -1,
          verbose = FALSE)
-a$x2 <- a$x0 - 360
 library(ggplot2)
 ww <- map_data('world', ylim=c(-60,60))
 
@@ -69,11 +75,44 @@ ggplot() +  theme_bw() +
                alpha = 0.0, col = "grey") +
   geom_point(data = a[!(a$tun_y0 == -1 |
                           a$tun_y1 == -1 | a$id == 0), ],
-             aes(x = x2, y = y0), size = 3) +
+             aes(x = x0 - 360, y = y0), size = 3) +
   geom_line(data = a[!(a$tun_y0 == -1 |
                          a$tun_y1 == -1 | a$id == 0), ],
-            aes(x = x2, y = y0)) +
-  ggtitle("Coelho et al. (2015):") +
+            aes(x = x0 - 360, y = y0)) +
+  ggtitle("Coelho et al. (2015): JFM/2014, K = 3, (x0 = 135ºW, y0 = 30ºS)") +
   ylab(NULL) + xlab(NULL)
 ```
+
+The ```ray``` or the ```ray_source``` functions return a ```data.table``` exampled below:
+
+```
+head(a)
+```
+
+```{r cabecalho, echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
+input <- system.file("extdata",
+                     "uwnd.mon.mean_200hPa_2014JFM.nc",
+                     package = "raytracing")
+b <- betaks(ifile = input)
+a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
+         umz = colMeans(b$um, na.rm = TRUE),
+         lat = b$lat,
+         K = 3,
+         itime = 30,
+         x0 = -135 + 360,
+         y0 = -30,
+         dt = 6 * 60 * 60,
+         direction = -1,
+         verbose = FALSE)
+```
+
+## Installing
+
+Install development versions from github with
+
+```
+library(devtools)
+install_github("salvatirehbein/raytracing")
+```
+
 

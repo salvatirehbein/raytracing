@@ -2,8 +2,7 @@
 % Please edit documentation in R/beta_ks.R
 \name{betaks}
 \alias{betaks}
-\title{Calculate the meridional gradient of the absolute vorticity (beta)
-and the stationary Rossby wavenumber (Ks)}
+\title{Calculates Beta and Ks}
 \usage{
 betaks(
   ifile,
@@ -17,31 +16,39 @@ betaks(
 )
 }
 \arguments{
-\item{ifile}{Input file name consisting in zonal wind at one pressure
-level and one time}
+\item{ifile}{String indicating the input data filename. The file to be
+passed consists in a netCDF file with only time-mean zonal wind at one
+pressure level and with latitude in ascending order (not a requisite).
+It is required that the read dimensions express
+longitude (in rows) x latitude (in columns)}
 
-\item{varname}{Zonal wind variable name at a specified level and time}
+\item{varname}{String indicating the Variable name of the time-mean
+zonal wind field}
 
-\item{latname}{Latitude variable name}
+\item{latname}{String indicating the variable name of the latitude field}
 
-\item{lonname}{Longitude variable name}
+\item{lonname}{String indicating the variable name of the longitude field}
 
-\item{ofile}{Output file name}
+\item{ofile}{String indicating the file name for store output data.
+If missing, will not return a netCDF file.}
 
-\item{a}{Earth's radio (m)}
+\item{a}{Numeric indicating the Earth's radio (m)}
 
 \item{plots}{Logical, if TRUE will produce filled.countour plots}
 
 \item{show.warnings}{Logical, if TRUE will warns about NaNs in sqrt(<0)}
 }
 \value{
-The meridional group velocity
+list with one vector (lat) and 3 matrices (um, betam, and ksm)
 }
 \description{
-This function calculates the meridional gradient of the absolute
-vorticity (beta), zonal wind (u), and stationary Rossby wave in
-mercator coordinates as in Hoskins & Ambrizzi (1993).
-The input data is zonal wind with latitude in ascending order.
+\code{betaks} ingests the time-mean zonal wind (u), transform it in
+mercator coordinates (um); calculates the meridional gradient of
+the absolute vorticity (beta) in mercator coordinates (betam);
+and, finally, calculates stationary wavenumber (Ks) in mercator coordinates
+(ksm) (see: Hoskins and Ambrizzi, 1993). \code{betaks} returns the um, betam,
+and lat, for being ingested in \code{\link{ray}} or
+\code{\link{ray_source}}.
 }
 \examples{
 {
