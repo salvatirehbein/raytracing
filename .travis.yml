@@ -4,17 +4,22 @@ r:
   - release
 
 sudo: required
-dist: bionic
+dist: focal
 
 addons:
   apt:
     packages:
+      - libudunits2-dev
+      - libproj-dev
+      - libgeos-dev
+      - libgdal-dev
       - libnetcdf-dev
       - netcdf-bin
+      - gdal-bin
 
 r_packages:
   - covr
 
 after_success:
-  - Rscript -e 'library(covr); codecov()' 
+  - Rscript -e 'library(covr); codecov()'
 
