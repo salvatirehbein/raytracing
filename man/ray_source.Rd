@@ -5,8 +5,8 @@
 \title{Calculate the Rossby waves ray paths over a source region}
 \usage{
 ray_source(
-  betamz,
-  umz,
+  betam,
+  u,
   lat,
   x0,
   y0,
@@ -14,6 +14,7 @@ ray_source(
   dt,
   itime,
   direction,
+  interpolation = "ypos",
   tl = 1,
   a = 6371000,
   verbose = FALSE,
@@ -21,18 +22,6 @@ ray_source(
 )
 }
 \arguments{
-\item{betamz}{zonal mean of \strong{betam}. \strong{betam} is a
-matrix (longitude = rows x latitude from minor to major = columns)
-obtained with \code{\link{betaks}}. It is suggested to use
-\code{\link{colMeans}} base R function in order to obtain the
-zonal mean of \strong{betam}.}
-
-\item{umz}{zonal mean of \strong{um}. \strong{um} is a
-matrix (longitude = rows x latitude from minor to major = columns)
-obtained with \code{\link{betaks}}. It is suggested to use
-\code{\link{colMeans}} base R function in order to obtain the
-zonal mean of \strong{um}.}
-
 \item{lat}{Numeric vector of latitudes from minor to major
 (ex: -90 to 90)}
 
@@ -62,6 +51,20 @@ during compilation}
 
 \item{ofile}{Character;  Output file name with .csv extension,
 for instance, "/user/ray.csv"}
+
+\item{betamz}{zonal mean of \strong{betam}. \strong{betam} is a
+matrix (longitude = rows x latitude from minor to major = columns)
+obtained with \code{\link{betaks}}. It is suggested to use
+\code{\link{colMeans}} base R function in order to obtain the
+zonal mean of \strong{betam}.}
+
+\item{umz}{zonal mean of \strong{um}. \strong{um} is a
+matrix (longitude = rows x latitude from minor to major = columns)
+obtained with \code{\link{betaks}}. It is suggested to use
+\code{\link{colMeans}} base R function in order to obtain the
+zonal mean of \strong{um}.}
+
+\item{interpolate}{Logical, use \code{\link{trin}}, TRUE or FALSE}
 }
 \value{
 sf data.frame
@@ -79,17 +82,37 @@ and directions, using the same basic state given by  \code{\link{betaks}}.
 input <- system.file("extdata",
                      "uwnd.mon.mean_300hPa_1997-98DJF.nc",
                       package = "raytracing")
-b <- betaks(ifile = input)
-r1 <- ray_source(betamz = colMeans(b$betam, na.rm = TRUE),
-                umz = colMeans(b$um, na.rm = TRUE),
-                lat = b$lat,
-                direction = -1,
-                x0 = -130 + 360,
-                y0 = -17,
-                K = c(5),
-                dt = 12 * 60 * 60,
-                itime = 10*2)
+b <- betaks(u = input)
+r1 <- ray_source(betam = b$betam,
+                 u = b$u,
+                 lat = b$lat,
+                 direction = -1,
+                 x0 =  -130,#-seq(129,131, 0.5),
+                 y0 = -17.06,#-seq(17,17.08, 0.01),
+                 K = c(3),
+                 dt = 12,
+                 itime = 20*2, interpolation = "trin")
+rl <- ray_path(r1$lon, r1$lat)
+plot(r1$geometry, reset = F, axes = T)
+plot(rl, col = "red", add = T)
 # Simple plot:
+# r1 <- r1[r1$iday \%in\% c(0,12),]
+plot(r1["id"], axes = T, key.pos = 3)
+plot(r1["id"],
+     axes = TRUE,
+     reset = FALSE,
+     key.pos = 1,
+     pal = c("red", "blue", "black"),
+     pch = 16,
+     key.length = 1)
+lrs <- split(r1, r1$id)
+
+rl <- lapply(seq_along(lrs), function(i){
+  x <- ray_path(x = lrs[[i]]$lon, y = lrs[[i]]$lat)
+})
+plot(rl[[1]], add = T, col = "red")
+plot(rl[[2]], add = T, col = "blue")
+plot(rl[[3]], add = T, col = "black")
 
 }
 }

@@ -4,12 +4,17 @@
 \alias{ypos}
 \title{Get the position of a given latitute y}
 \usage{
-ypos(y, lat)
+ypos(y, lat, yk, mercator = FALSE)
 }
 \arguments{
 \item{y}{numeric value of one latitude}
 
 \item{lat}{numeric vector of latitudes from minor to major}
+
+\item{yk}{numeric vector to be approximated}
+
+\item{mercator}{Logical. Is it require to transform the final data
+in mercator coordinates? Default is FALSE.}
 }
 \value{
 The position where the latitude y has the minor
@@ -20,6 +25,17 @@ This function get the position in a vector of a given latitute y.
 }
 \examples{
 {
-ypos(y = -30, lat = seq(-90, 90, 2.5))
+input <- system.file("extdata",
+                     "uwnd.mon.mean_200hPa_2014JFM.nc",
+                      package = "raytracing")
+b <- betaks(u = input)
+ykk <- rev(colMeans(b$betam))
+ypos(y = -30, lat = seq(90, -90, -2.5), yk = ykk)
+
 }
 }
+\seealso{
+Other Interpolation: 
+\code{\link{trin}()}
+}
+\concept{Interpolation}

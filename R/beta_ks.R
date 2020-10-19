@@ -1,4 +1,4 @@
-#' Calculates Beta and Ks
+#' Calculates Beta and Ks  GitHub
 #'
 #' \code{betaks} ingests the time-mean zonal wind (u), transform it in
 #' mercator coordinates (um); calculates the meridional gradient of
@@ -28,115 +28,173 @@
 #' @importFrom graphics filled.contour
 #' @export
 #' @examples {
+#' ############################################
+#' # u is NetCDF and lat and lon characters
+#'
 #' input <- system.file("extdata",
 #'                      "uwnd.mon.mean_200hPa_2014JFM.nc",
 #'                       package = "raytracing")
-#' b <- betaks(ifile = input)
+#' b <- betaks(u = input)
+#' b$ksm[] <- ifelse(b$ksm[] >= 16 |
+#'                   b$ksm[] <= 0, NA, b$ksm[])
+#' cores <- c("#ff0000","#ff5a00","#ff9a00","#ffce00","#f0ff00")
+#' filled.contour(b$ksm[, -c(1:5, 69:73)] ,
+#'                #col = rev(heat.colors(16)),
+#'                col = rev(colorRampPalette(cores, bias = 0.5)(20)),
+#'                main = "R")
 #' output <- paste0(tempfile(), ".nc")
-#' b <- betaks(ifile = input, ofile = output)
+#' b <- betaks(u = input, ofile = output)
+#'
+#' ############################################
+#' # u, lat and lon as numeric
+#'
+#' u <- readBin("../STF_teste/u.gra",
+#'                what = numeric(),
+#'                size = 4,
+#'                n = 145*73*4)
+#' lat <- seq(-90, 90, 2.5)
+#' lon <- seq(-180, 180, 2.5)
+#' u <- matrix(u,
+#'             nrow = length(lon),
+#'             ncol = length(lat))
+#' b <- betaks(u, lat, lon)
+#'
+#' # ks
+#' kf <- readBin("../STF_teste/ks.gra",
+#'                what = numeric(),
+#'                size = 4,
+#'                n = 145*73*4)
+#' kf <- matrix(kf,
+#'             nrow = length(lon),
+#'             ncol = length(lat))
+#'
+#' filled.contour(b$ksm[, -c(1:5, 69:73)] ,
+#'                col = rainbow(30),
+#'                main = "R")
+#' filled.contour(kf[, -c(1:5, 69:73)],
+#'                col = rainbow(30),
+#'                main = "F77")
+#' filled.contour(b$ksm[, -c(1:5, 69:73)] -
+#'                   kf[, -c(1:5, 69:73)], col = rainbow(14))
+#' # beta
+#' bf <- readBin("../STF_teste/beta.gra",
+#'                what = numeric(),
+#'                size = 4,
+#'                n = 145*73*4)
+#' bf <- matrix(bf,
+#'             nrow = length(lon),
+#'             ncol = length(lat))
+#'
+#' filled.contour(b$betam[, -c(1:5, 69:73)] ,
+#'                col = rainbow(30),
+#'                main = "R")
+#' filled.contour(bf[, -c(1:5, 69:73)],
+#'                col = rainbow(30),
+#'                main = "F77")
+#' filled.contour(b$betam[, -c(1:5, 69:73)] -
+#'                bf[, -c(1:5, 69:73)],
+#'                col = rainbow(14),
+#'                main = "R - F77\n
+#'                Mercator funciona entre abs(60)")
 #' }
-betaks <- function(ifile,
-                   varname = "uwnd",   # lat
-                   latname = "lat",    # lon,
-                   lonname = "lon",
+betaks <- function(u,
+                   lat = "lat",    # lon,
+                   lon = "lon",
+                   uname = "uwnd",   # lat
                    ofile,
                    a = 6371000,
                    plots = FALSE,
                    show.warnings = FALSE
 ) {
+  if(inherits(u, "character")){
+    message("Detecting NetCDF")
+    ncu      <- ncdf4::nc_open(filename = u)
+    u        <- ncdf4::ncvar_get(nc = ncu, varid = uname)
+    lat      <- ncdf4::ncvar_get(nc = ncu, varid = lat)
+    lon      <- ncdf4::ncvar_get(nc = ncu, varid = lon)
+    ncdf4::nc_close(ncu)
 
-  ncu <- ncdf4::nc_open(filename = ifile)
-  uwnd <- ncdf4::ncvar_get(nc = ncu, varid = varname)
-  lat <- ncdf4::ncvar_get(nc = ncu, varid = latname)
-  lon <- ncdf4::ncvar_get(nc = ncu, varid = lonname)
-  ncdf4::nc_close(ncu)
+  }
 
-  dx <- abs(lon[2] - lon[1])
-  dy <- abs(lat[2] - lat[1])
-  nlat <- dim(lat)
-  nlon <- dim(lon)
+
+  dx       <- abs(lon[2] - lon[1])
+  dy       <- abs(lat[2] - lat[1])
+  nlat     <- length(lat)
+  nlon     <- length(lon)
 
   # Define parameters and constants
   if(is.unsorted(lat)) {
-    phi <- -lat
+    message("Sorting latitude from south to north")
+    phi <- lat[order(lat, decreasing = FALSE)]
+    u <- u[, nlat:1]
   } else {
     phi <- lat # nocov
   }
 
+  if(plots) graphics::filled.contour(u, main = "u")
+
   omega <- 2*pi/(24*60*60)
   dphi <- dy*pi/180
   dphia <- dphi*a
-  phirad <- phi*(pi/180)
-  m_phirad <- matrix(rep(phirad, nlon),
-                     ncol = nlat,
-                     nrow = nlon,
-                     byrow = TRUE)
-
-  if(plots) graphics::filled.contour(m_phirad, main = "phirad")
-
-  #  U Mercator ####
-  if(is.unsorted(lat)) {
-    u <- uwnd[, nlat:1]
-  } else {
-    u <- uwnd[,]  # nocov
-  }
-  u_mercator <- u / cos(m_phirad)
-
-  if(plots) graphics::filled.contour(uwnd, main = "uwnd")
-  if(plots) graphics::filled.contour(u, main = "u")
-  if(plots) graphics::filled.contour(u_mercator[,-c(1:5,(nlat-5):nlat)],
-                                     main = "u mercator")
+  phirad <- matrix(phi*(pi/180),
+                   nrow = 1,
+                   ncol = nlat)
 
   # Calculate beta terms
   # 1st term: df/dy ####
-  fdfdy <- function(j){
-    (2*omega*sin(phirad[j + 1]) - 2*omega*sin(phirad[j - 1]))/(2*dphia)
+  dfdy <- matrix(NA,
+                 nrow = 1,
+                 ncol = nlat - 2)
+  for(j in 2:(nlat - 1)) {
+    dfdy[1, j-1] <- (
+      2*omega*sin(phirad[1, j + 1]) - 2*omega*sin(phirad[1, j - 1]))/(2*dphia)
   }
-
-  dfdy <- fdfdy(j = 2:(length(phi)-1))
-  length(dfdy)
-
-  m_dfdy <- matrix(rep(dfdy, nlon),
-                   ncol = nlat - 2 ,
-                   nrow = nlon,
-                   byrow = TRUE)
-
-  # unique(m_dfdy[1,] == m_dfdy[12,]) # TRUE
 
   #  message("df/dy must be close to 0 at the poles and > 0 at the Equator\n")
-  if(plots) graphics::filled.contour(m_dfdy,main= "df/dy")
+  if(plots) graphics::plot(as.vector(dfdy),
+                           main= "df/dy",
+                           pch = 16)
 
   # 2nd term: d2u/dy2 ####
-  fd2u <- function(m, i, j){
-    (m[i, j + 1] - 2*m[i, j] + m[i, j-1]) / (dphia^2)
+  m_phirad <- matrix(as.vector(phirad),
+                     nrow = nlon,
+                     ncol = nlat,
+                     byrow = TRUE)
+  uc <- u*cos(m_phirad)
+
+  d2udy2 <- matrix(NA,
+                   nrow = nlon,
+                   ncol = nlat - 2)
+  for(j in 2:(nlat - 1)) {
+    for(i in 1:nlon) {
+      d2udy2[i, j-1] <- (uc[i, j + 1] - 2*uc[i, j] + uc[i, j-1]) / (dphia^2)
+
+    }
   }
-  d2udy2 <- fd2u(m = u,
-                 i = 1:nlon,
-                 j = 2:(nlat-1))
-  if(plots) graphics::filled.contour(d2udy2, main = expression("d2u/dy2"))
+  if(plots) graphics::filled.contour(d2udy2, main = expression("d2u/dy2"),
+                                     col = rainbow(20))
 
   # Calculate Beta ####
+  m_dfdy <- matrix(as.vector(dfdy),
+                   nrow = nlon,
+                   ncol = nlat - 2,
+                   byrow = TRUE)
   beta <- m_dfdy - d2udy2
 
-  beta_f <- cbind(matrix(NA, ncol = 1, nrow = nlon),
+  beta_f <- cbind(beta[, 1],
                   beta,
-                  matrix(NA, ncol = 1, nrow = nlon))
+                  beta[, ncol(beta)])
 
   if(plots) graphics::filled.contour(beta_f[,], main = "Beta")
 
   # Calculate Beta Mercartor --> beta * cos(phi) #####
-  mercator <- function(m, m2, i, j){
-    m[i,j]*cos(m2[i,j])
-  }
-  beta_mercator <- mercator(m = beta_f,
-                            m2 = m_phirad,
-                            i = 1:nlon,
-                            j = 1:nlat)
+  beta_mercator <- beta_f*cos(m_phirad)
+
   if(plots) graphics::filled.contour(beta_mercator,
                                      main = "Beta Mercator")
 
   # Ks mercator #######
-  ks_mercator <- matrix(NA, nrow = nrow(u), ncol = ncol(u))
+  ks_mercator <- matrix(NA, nrow = nlon, ncol = nlat)
 
   ks_mercator[] <- ifelse(
     beta_mercator[] < 0 & u[] != 0, -1,
@@ -145,21 +203,21 @@ betaks <- function(ifile,
       ifelse(
         beta_mercator[] == 0 | u[] == 0, 0,
         if(show.warnings) {
-          a * sqrt( (beta_mercator[] * cos(m_phirad[])) / u[])
+          a * sqrt( (beta_mercator * cos(m_phirad)) / u)
         } else {
-            suppressWarnings(a * sqrt( (beta_mercator[] * cos(m_phirad[])) / u[]))
-          }
+          suppressWarnings(a * sqrt( (beta_mercator*cos(m_phirad)) / u))
+        }
       )))
 
-  ks_mercator[] <- ifelse(ks_mercator[] >= 16, 20, ks_mercator[])
-
+  ks_mercator[] <- ifelse(ks_mercator[] >= 16 &
+                            ks_mercator[] != 30, 20, ks_mercator[])
 
   if(plots) graphics::hist(ks_mercator, main = "Ks")
   if(plots) graphics::filled.contour(ks_mercator, main = "Ks")
 
   if(missing(ofile)){
     return(list(lat = phi,
-                um = u_mercator,
+                u = u,
                 betam = beta_mercator,
                 ksm = ks_mercator))
   } else {
@@ -183,7 +241,7 @@ betaks <- function(ifile,
                              units = "",
                              dim = list(west_east, south_north),
                              prec = "float")
-    UM <- ncdf4::ncvar_def(name = "u_mercator" ,
+    UM <- ncdf4::ncvar_def(name = "u" ,
                            units = "",
                            dim = list(west_east, south_north),
                            prec = "float")
@@ -200,7 +258,7 @@ betaks <- function(ifile,
     vars_file <- ncdf4::nc_create(filename = ofile,
                                   vars = c(list('XLAT' = XLAT,
                                                 'XLONG' = XLONG,
-                                                'u_mercator' = UM,
+                                                'u' = UM,
                                                 'beta_mercator' = BETAM,
                                                 'ks_mercator' = KSM)),
                                   force_v4 = FALSE)
@@ -285,28 +343,28 @@ betaks <- function(ifile,
                      varid = "XLAT",
                      attname = "FieldType",
                      attval = 104)
-    # u_mercator
+    # u
     ncdf4::ncvar_put(nc = vars_file,
-                     varid = "u_mercator",
-                     vals = u_mercator)
+                     varid = "u",
+                     vals = u)
     ncdf4::ncatt_put(vars_file,
-                     varid = "u_mercator",
+                     varid = "u",
                      attname = "MemoryOrder",
                      attval = "XYZ")
     ncdf4::ncatt_put(vars_file,
-                     varid = "u_mercator",
+                     varid = "u",
                      attname = "description",
                      attval = "Basic state")
     ncdf4::ncatt_put(vars_file,
-                     varid = "u_mercator",
+                     varid = "u",
                      attname = "units",
                      attval = "m/s")
     ncdf4::ncatt_put(vars_file,
-                     varid = "u_mercator",
+                     varid = "u",
                      attname = "stagger",
                      attval = "um")
     ncdf4::ncatt_put(vars_file,
-                     varid = "u_mercator",
+                     varid = "u",
                      attname = "FieldType",
                      attval = 104)
     # beta_mercator
@@ -362,7 +420,7 @@ betaks <- function(ifile,
 
     # Returning a list with the calculated variables
     return(list(lat = phi,
-                um = u_mercator,
+                u = u,
                 betam = beta_mercator,
                 ksm = ks_mercator))
 

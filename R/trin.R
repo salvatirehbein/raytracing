@@ -3,6 +3,7 @@
 #' This function performs trigonometric interpolation for the
 #' passed basic state variable and the requested latitude
 #'
+#' @family Interpolation
 #' @param betamz meridional gradient of the absolute vorticity
 #'  in Mercator coordinates
 # #' @param umz zonal wind in mercator coordinates
@@ -11,25 +12,31 @@
 #' @param yk Numeric vector of the data to be interpolated.
 #' For instance, umz or betam
 #' @param nlat Numeric. The total latitudes of the vector yk.
+#' @param mercator Logical. Is it require to transform the final data
+#' in mercator coordinates? Default is FALSE.
+#' @seealso \code{\link{ypos}} \code{\link{ray}}  \code{\link{ray_source}}
 #' @return Numeric value
+#' @note This function is an alternative to \code{\link{ypos}}
 #' @export
 #' @examples {
 #' input <- system.file("extdata",
 #'                      "uwnd.mon.mean_200hPa_2014JFM.nc",
 #'                       package = "raytracing")
-#' b <- betaks(ifile = input)
-#' umz <- colMeans(b$um, na.rm = TRUE)
+#' b <- betaks(u = input)
+#' umz <- rev(colMeans(b$u, na.rm = TRUE))*cos(rev(b$lat)*pi/180)
+#' betamz <- rev(colMeans(b$betam, na.rm = TRUE))
 #' y0 <- -17
-#' it(y = -17, yk = umz, nlat = length(b$lat))
+#' trin(y = y0, yk = umz)
 #' }
-it <- function(y,
-               yk,
-               nlat) {
-  n <- nlat/2
-  # Calculate the A parameter
-  yk <- ifelse(yk >= 1e4, 0, yk)
-  A <- yk[nlat]
+trin <- function(y,
+                 yk, mercator = FALSE) {
+  nlat <- length(yk)
+  n <- trunc(nlat/2)
 
+  # Calculate the A parameter
+  yk <- ifelse(yk >= 1e4, NA, yk)
+
+  A <- yk[nlat]
   for (i in 1:n) {
     A <- sum(A, yk[i], yk[i + n], na.rm = TRUE)
   }
@@ -52,7 +59,7 @@ it <- function(y,
   # Great sum
   soma <- 0
   for (i in 1:n) {
-    kx <- 2 * i * pi * (90 - y)/180
+    kx <- 2 * i * pi * (90 - y)/185
     soma <- sum(soma,
                 l_ak[[i]] * cos(kx),
                 l_bk[[i]] * sin(kx),
@@ -61,5 +68,6 @@ it <- function(y,
 
   # Calculate the final interpolated value T(x)
   tx <- (2 * soma + A) / (2*n + 1)
+  if(mercator) tx <- tx/cos(y*pi/180)
   return(tx)
 }

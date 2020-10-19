@@ -2,10 +2,10 @@
 #'
 #' This function calculates the meridional group velocity.
 #'
-#' @param betamz meridional gradient of the absolute vorticity
+#' @param beta meridional gradient of the absolute vorticity
 #'  in Mercator coordinates
 # #' @param umz zonal wind in mercator coordinates
-#' @param y A latitude
+#' @param y The latitude y0 or y1
 #' @param lat Numeric vector of latitudes from minor to major
 #' @param K Numeric. Total Rossby wavenumber
 #' @param Ks2 Numeric. Stationary Rossby wavenumber
@@ -22,17 +22,22 @@
 #' input <- system.file("extdata",
 #'                      "uwnd.mon.mean_200hPa_2014JFM.nc",
 #'                       package = "raytracing")
-#' b <- betaks(ifile = input)
-#' betam_z <- colMeans(b$betam, na.rm = TRUE)
-#' um_z <- colMeans(b$um, na.rm = TRUE)
+#' b <- betaks(u = input)
 #' y0 <- -30
-#' calcVg(betamz = betam_z,
-#'        Ks2 = betam_z[ypos(y0, b$lat)]/um_z[ypos(y0, b$lat)],
+#' lat <- rev(b$lat)
+#' phirad <- lat*pi/180
+#' betamz <- rev(colMeans(b$betam, na.rm = TRUE))
+#' umz <- rev(colMeans(b$u, na.rm = TRUE))*cos(phirad)
+#' beta_y0 <- trin(y0, yk = betamz)
+#' u_y0 <- trin(y0, yk = umz)
+#' Ks2_y0 <- beta_y0/u_y0
+#'
+#' calcVg(beta = beta_y0,
+#'        Ks2 = Ks2_y0,
 #'        y = y0,
-#'        lat = b$lat)
+#'        lat = lat)
 #' }
-calcVg <- function(betamz,
-                   # umz,
+calcVg <- function(beta,
                    Ks2,
                    y,
                    lat,
@@ -40,18 +45,13 @@ calcVg <- function(betamz,
                    direction = -1,
                    tl = 1,
                    a = 6371000) {
-  # Ks2 <- betamz[ypos(y, lat = lat)]/umz[ypos(y, lat = lat)]
   k <- K/a
-  l <- sqrt(abs(Ks2 - k^2))
-  phirad <- lat*pi/180
-  return (
-    (direction*
-      tl*
-      2*
-      betamz[ypos(y, lat = lat)]*
-      k*
-      l*
-      cos(phirad[ypos(y, lat = lat)]) /
-      Ks2^2) * (180/(pi*a))
-  )
+  l2 <- Ks2 - k^2
+  l <- sqrt(abs(l2))
+
+    vg <- (direction * tl*
+             2 * beta * k * sqrt(abs(l2)) * cos(y*pi/180) / Ks2^2) *
+          (180/(pi*a))
+
+    return (vg)
 }

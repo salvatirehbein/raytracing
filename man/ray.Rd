@@ -5,8 +5,8 @@
 \title{Calculates the Rossby waves ray paths}
 \usage{
 ray(
-  betamz,
-  umz,
+  betam,
+  u,
   lat,
   x0,
   y0,
@@ -14,6 +14,7 @@ ray(
   dt,
   itime,
   direction,
+  interpolation,
   tl = 1,
   a = 6371000,
   verbose = FALSE,
@@ -21,24 +22,20 @@ ray(
 )
 }
 \arguments{
-\item{betamz}{zonal mean of \strong{betam}. \strong{betam} is a
-matrix (longitude = rows x latitude from minor to major = columns)
-obtained with \code{\link{betaks}}. It is suggested to use
-\code{\link{colMeans}} base R function in order to obtain the
-zonal mean of \strong{betam}.}
+\item{betam}{matrix (longitude = rows x latitude from minor to
+major = columns) obtained with \code{\link{betaks}}. betam is the
+meridional gradient of the absolute vorticity in mercator coordinates}
 
-\item{umz}{zonal mean of \strong{um}. \strong{um} is a
-matrix (longitude = rows x latitude from minor to major = columns)
-obtained with \code{\link{betaks}}. It is suggested to use
-\code{\link{colMeans}} base R function in order to obtain the
-zonal mean of \strong{um}.}
+\item{u}{matrix (longitude = rows x latitude from minor to
+major = columns) obtained with \code{\link{betaks}}. Is the zonal wind in the
+appropriate format for the \code{ray}}
 
 \item{lat}{Numeric vector of latitudes from minor to major
-(ex: -90 to 90)}
+(ex: -90 to 90). Obtained with \code{\link{betaks}}}
 
-\item{x0}{Numeric value; longitude (0 to 360 degrees)}
+\item{x0}{Numeric value. First longitude (0 to 360 degrees)}
 
-\item{y0}{Numeric value; latitude}
+\item{y0}{Numeric value. First latitude}
 
 \item{K}{Numeric value; Total Rossby wavenumber}
 
@@ -51,6 +48,9 @@ times 4 times per day.}
 It controls the wave displacement:
 If 1, the wave goes to the north of the source;
 If -1, the wave goes to the south of the source.}
+
+\item{interpolation}{Character. Set the interpolation method to be used:
+\code{\link{trin}} or \code{\link{ypos}}}
 
 \item{tl}{Numeric value; Turning latitude. Do not change this!
 It will always start with a positive tl (1) and automatically
@@ -68,42 +68,60 @@ for instance, "/user/ray.csv"}
 sf data.frame
 }
 \description{
-\code{ray} must ingest the zonal means of \strong{betam} and \strong{um},
-plus the latitude vector (\strong{lat}). \code{ray} returns the Rossby wave
-ray paths (lat/lon) triggered from an initial source/position (x0, y0),
-a total wavenumber (K), and direction set up when invoking the function.
+\code{ray} returns the Rossby wave ray paths (lat/lon) triggered from
+an initial source/position (x0, y0), a total wavenumber (K), and direction
+set up when invoking the function.
+\code{ray} must ingest the meridional gradient of the absolute vorticity
+in mercator coordinates\strong{betam}, the zonal mean wind \strong{u},
+and the latitude vector (\strong{lat}). Those variables can be obtained
+(recommended) using \code{\link{betaks}} function.
 }
 \examples{
 {
 # For Magana and Ambrizzi (1998):
+rm(list = ls()); graphics.off(); gc()
 input <- system.file("extdata",
                      "uwnd.mon.mean_300hPa_1997-98DJF.nc",
                       package = "raytracing")
-b <- betaks(ifile = input)
-ma98 <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
-                umz = colMeans(b$um, na.rm = TRUE),
+b <- betaks(u = input)
+ma98 <- ray(betam = b$betam,
+                u = b$u,
                 lat = b$lat,
                 K = 3,
                 itime = 10*4,
-                x0 = -130 + 360,
-                y0 = -17,
-                dt = 6 * 60 * 60,
-                direction = -1)
-head(ma98)
+                x0 = -130,
+                y0 = -15,
+                dt = 6,
+                direction = -1,
+                interpolation = "trin")
+plot(y = ma98$lat, x = ma98$lon, type = "b")
+# selecting 0 and 12
+#ma98 <- ma98[ma98$iday \%in\% c(0,12),]
+plot(ma98$geometry, reset = F, axes = TRUE)
+r1 <- ray_path(ma98$lon, ma98$lat)
+plot(r1, add = TRUE)
 # For Coelho et al. (2015):
+rm(list = ls()); graphics.off(); gc()
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                       package = "raytracing")
-b <- betaks(ifile = input)
-co2015 <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
-                umz = colMeans(b$um, na.rm = TRUE),
+b <- betaks(u = input)
+co2015 <- ray(betam = b$betam,
+                u = b$u,
                 lat = b$lat,
                 K = 3,
                 itime = 10 * 4,
-                x0 = -130 + 360,
+                x0 = -135,
                 y0 = -30,
-                dt = 6 * 60 * 60,
-                direction = -1)
-head(co2015)
+                dt = 6,
+                direction = -1, interpolation = "trin")
+plot(y = co2015$lat, x = co2015$lon)
+co2015 <- co2015[co2015$iday \%in\% c(0,6,12,18),]
+plot(co2015$geometry, reset = FALSE, axes = TRUE)
+r1 <- ray_path(co2015$lon, co2015$lat)
+plot(r1, add = TRUE)
 }
+}
+\seealso{
+\code{\link{ray_source}}
 }

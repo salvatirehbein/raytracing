@@ -2,10 +2,9 @@
 #'
 #' This function calculates the zonal group velocity.
 #'
-#' @param betamz meridional gradient of the absolute vorticity
+#' @param beta meridional gradient of the absolute vorticity
 #'  in Mercator coordinates
 # #' @param umz zonal wind in mercator coordinates
-#' @param y A latitude
 #' @param lat Numeric vector of latitudes from minor to major
 #' @param K Numeric. Total Rossby wavenumber
 #' @param Ks2 Numeric. Stationary Rossby wavenumber
@@ -16,26 +15,29 @@
 #' input <- system.file("extdata",
 #'                      "uwnd.mon.mean_200hPa_2014JFM.nc",
 #'                       package = "raytracing")
-#' b <- betaks(ifile = input)
-#' betam_z <- colMeans(b$betam, na.rm = TRUE)
-#' um_z <- colMeans(b$um, na.rm = TRUE)
+#' b <- betaks(u = input)
 #' y0 <- -30
-#' calcUg(betamz = betam_z,
-#'        Ks2 = betam_z[ypos(y0, b$lat)]/um_z[ypos(y0, b$lat)],
-#'        y = y0,
-#'        lat = b$lat) # 7.039724e-05
+#' lat <- rev(b$lat)
+#' phirad <- lat*pi/180
+#' betamz <- rev(colMeans(b$betam, na.rm = TRUE))
+#' umz <- rev(colMeans(b$u, na.rm = TRUE))*cos(phirad)
+#' beta_y0 <- trin(y0, yk = betamz)
+#' u_y0 <- trin(y0, yk = umz)
+#' Ks2_y0 <- beta_y0/u_y0
+#'
+#' calcUg(beta = beta_y0,
+#'        Ks2 = Ks2_y0,
+#'        lat = lat)
 #' }
-calcUg <- function(betamz,
-                   # umz,
+calcUg <- function(beta,
                    Ks2,
-                   y,
                    lat,
                    K = 3,
                    a = 6371000) {
-  k <- K/a
-  # Ks2 <- betamz[ypos(y, lat)]/umz[ypos(y, lat)]
 
-  ug <-  (2 * betamz[ypos(y, lat)] * k^2 / (Ks2^2) ) * 180 / (a*pi)
+  k <- K/a
+
+  ug <-  (2 * beta * k^2 / Ks2^2 ) * 180 / (a*pi)
 
   return (ug)
 }

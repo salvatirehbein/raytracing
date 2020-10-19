@@ -4,15 +4,15 @@
 \alias{calcVg}
 \title{Calculate the meridional group velocity}
 \usage{
-calcVg(betamz, Ks2, y, lat, K = 3, direction = -1, tl = 1, a = 6371000)
+calcVg(beta, Ks2, y, lat, K = 3, direction = -1, tl = 1, a = 6371000)
 }
 \arguments{
-\item{betamz}{meridional gradient of the absolute vorticity
+\item{beta}{meridional gradient of the absolute vorticity
 in Mercator coordinates}
 
 \item{Ks2}{Numeric. Stationary Rossby wavenumber}
 
-\item{y}{A latitude}
+\item{y}{The latitude y0 or y1}
 
 \item{lat}{Numeric vector of latitudes from minor to major}
 
@@ -39,13 +39,19 @@ This function calculates the meridional group velocity.
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                       package = "raytracing")
-b <- betaks(ifile = input)
-betam_z <- colMeans(b$betam, na.rm = TRUE)
-um_z <- colMeans(b$um, na.rm = TRUE)
+b <- betaks(u = input)
 y0 <- -30
-calcVg(betamz = betam_z,
-       Ks2 = betam_z[ypos(y0, b$lat)]/um_z[ypos(y0, b$lat)],
+lat <- rev(b$lat)
+phirad <- lat*pi/180
+betamz <- rev(colMeans(b$betam, na.rm = TRUE))
+umz <- rev(colMeans(b$u, na.rm = TRUE))*cos(phirad)
+beta_y0 <- trin(y0, yk = betamz)
+u_y0 <- trin(y0, yk = umz)
+Ks2_y0 <- beta_y0/u_y0
+
+calcVg(beta = beta_y0,
+       Ks2 = Ks2_y0,
        y = y0,
-       lat = b$lat)
+       lat = lat)
 }
 }

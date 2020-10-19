@@ -28,6 +28,7 @@
 #' It controls the wave displacement:
 #' If 1, the wave goes to the north of the source;
 #' If -1, the wave goes to the south of the source.
+#' @param interpolate Logical, use \code{\link{trin}}, TRUE or FALSE
 #' @param tl Numeric value; Turning latitude. Do not change this!
 #' It will always start with a positive tl (1) and automatically
 #'  change to negative (-1) after the turning latitude.
@@ -43,21 +44,41 @@
 #' input <- system.file("extdata",
 #'                      "uwnd.mon.mean_300hPa_1997-98DJF.nc",
 #'                       package = "raytracing")
-#' b <- betaks(ifile = input)
-#' r1 <- ray_source(betamz = colMeans(b$betam, na.rm = TRUE),
-#'                 umz = colMeans(b$um, na.rm = TRUE),
-#'                 lat = b$lat,
-#'                 direction = -1,
-#'                 x0 = -130 + 360,
-#'                 y0 = -17,
-#'                 K = c(5),
-#'                 dt = 12 * 60 * 60,
-#'                 itime = 10*2)
+#' b <- betaks(u = input)
+#' r1 <- ray_source(betam = b$betam,
+#'                  u = b$u,
+#'                  lat = b$lat,
+#'                  direction = -1,
+#'                  x0 =  -130,#-seq(129,131, 0.5),
+#'                  y0 = -17.06,#-seq(17,17.08, 0.01),
+#'                  K = c(3),
+#'                  dt = 12,
+#'                  itime = 20*2, interpolation = "trin")
+#' rl <- ray_path(r1$lon, r1$lat)
+#' plot(r1$geometry, reset = F, axes = T)
+#' plot(rl, col = "red", add = T)
 #' # Simple plot:
+#'# r1 <- r1[r1$iday %in% c(0,12),]
+#' plot(r1["id"], axes = T, key.pos = 3)
+#' plot(r1["id"],
+#'      axes = TRUE,
+#'      reset = FALSE,
+#'      key.pos = 1,
+#'      pal = c("red", "blue", "black"),
+#'      pch = 16,
+#'      key.length = 1)
+#' lrs <- split(r1, r1$id)
+#'
+#' rl <- lapply(seq_along(lrs), function(i){
+#'   x <- ray_path(x = lrs[[i]]$lon, y = lrs[[i]]$lat)
+#' })
+#' plot(rl[[1]], add = T, col = "red")
+#' plot(rl[[2]], add = T, col = "blue")
+#' plot(rl[[3]], add = T, col = "black")
 #'
 #'}
-ray_source <- function(betamz,
-                       umz,
+ray_source <- function(betam,
+                       u,
                        lat,
                        x0,
                        y0,
@@ -65,11 +86,12 @@ ray_source <- function(betamz,
                        dt,
                        itime,
                        direction,
+                       interpolation = "ypos",
                        tl = 1,
                        a = 6371000,
                        verbose = FALSE,
                        ofile){
-  # faz combinacao dos x0 e y0
+  # combine the x0 and y0:
   df <- expand.grid(x0, y0)
   names(df) <- c("lon", "lat")
   dir <- direction
@@ -78,28 +100,30 @@ ray_source <- function(betamz,
   ddir <- lapply(seq_along(dir), function(i){
     ddf <- lapply(1:nrow(df), function(j){
       dwn <- lapply(1:length(wn), function(k){
-        cbind(ray(betamz = betamz,
-                  umz = umz,
+        cbind(ray(betam = betam,
+                  u = u,
                   lat = lat,
                   itime = itime,
                   K = wn[k],
                   dt = dt,
                   direction = dir[i],
+                  interpolation = interpolation,
                   x0 = df$lon[j],
                   y0 = df$lat[j],
                   verbose = verbose),
-              par = j # de coordenadas x0 y0
-              )
+              par = j, # de coordenadas x0 y0
+              id = paste0("K:",wn[k],
+                         ", (x0,y0):(",df$lon[j],",",df$lat[j],")"))
       })
-      do.call("rbind", dwn)
+        do.call("rbind", dwn)
     })
-    do.call("rbind", ddf)
+      do.call("rbind", ddf)
   })
 
-  DF <- do.call("rbind", ddir)
+    DF <- do.call("rbind", ddir)
 
-  if(!missing(ofile)) {
-    utils::write.csv(x = DF, file = ofile, row.names = FALSE)
-  }
-  return(DF)
+    if(!missing(ofile)) {
+      utils::write.csv(x = DF, file = ofile, row.names = FALSE)
+    }
+    return(DF)
 }

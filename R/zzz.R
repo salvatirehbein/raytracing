@@ -1,4 +1,4 @@
 .onAttach <- function(libname, pkgname) {
-  msg <- paste0 ("\n")
+  msg <- paste0 ("")
   packageStartupMessage (msg)
 }
