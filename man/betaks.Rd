@@ -16,27 +16,26 @@ betaks(
 )
 }
 \arguments{
+\item{u}{String indicating the input data filename. The file to be
+passed consists in a netCDF file with only time-mean zonal wind at one
+pressure level and with latitude in ascending order (not a requisite).
+It is required that the read dimensions express
+longitude (in rows) x latitude (in columns)}
+
+\item{lat}{String indicating the name of the latitude field}
+
+\item{lon}{String indicating the name of the longitude field}
+
+\item{uname}{String indicating the variable name field}
+
 \item{ofile}{String indicating the file name for store output data.
-If missing, will not return a netCDF file.}
+If missing, will not return a netCDF file}
 
 \item{a}{Numeric indicating the Earth's radio (m)}
 
 \item{plots}{Logical, if TRUE will produce filled.countour plots}
 
 \item{show.warnings}{Logical, if TRUE will warns about NaNs in sqrt(<0)}
-
-\item{ifile}{String indicating the input data filename. The file to be
-passed consists in a netCDF file with only time-mean zonal wind at one
-pressure level and with latitude in ascending order (not a requisite).
-It is required that the read dimensions express
-longitude (in rows) x latitude (in columns)}
-
-\item{varname}{String indicating the Variable name of the time-mean
-zonal wind field}
-
-\item{latname}{String indicating the variable name of the latitude field}
-
-\item{lonname}{String indicating the variable name of the longitude field}
 }
 \value{
 list with one vector (lat) and 3 matrices (um, betam, and ksm)
@@ -52,73 +51,38 @@ and lat, for being ingested in \code{\link{ray}} or
 }
 \examples{
 {
-############################################
 # u is NetCDF and lat and lon characters
-
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                       package = "raytracing")
-b <- betaks(u = input)
+b <- betaks(u = input, plots = TRUE)
 b$ksm[] <- ifelse(b$ksm[] >= 16 |
                   b$ksm[] <= 0, NA, b$ksm[])
 cores <- c("#ff0000","#ff5a00","#ff9a00","#ffce00","#f0ff00")
-filled.contour(b$ksm[, -c(1:5, 69:73)] ,
-               #col = rev(heat.colors(16)),
-               col = rev(colorRampPalette(cores, bias = 0.5)(20)),
-               main = "R")
-output <- paste0(tempfile(), ".nc")
-b <- betaks(u = input, ofile = output)
+graphics::filled.contour(b$ksm[, -c(1:5, 69:73)] ,
+                         col = rev(colorRampPalette(cores, bias = 0.5)(20)),
+                         main = "Ks")
 
-############################################
 # u, lat and lon as numeric
-
-u <- readBin("../STF_teste/u.gra",
-               what = numeric(),
-               size = 4,
-               n = 145*73*4)
+input <- system.file("extdata",
+                     "uwnd.mon.mean_200hPa_2014JFM.bin",
+                      package = "raytracing")
+u <- readBin(input,
+             what = numeric(),
+             size = 4,
+             n = 144*73*4)
 lat <- seq(-90, 90, 2.5)
-lon <- seq(-180, 180, 2.5)
+lon <- seq(-180, 180 - 1, 2.5)
 u <- matrix(u,
             nrow = length(lon),
             ncol = length(lat))
+graphics::filled.contour(u, main = "Zonal Wind Speed [m/s]")
 b <- betaks(u, lat, lon)
-
-# ks
-kf <- readBin("../STF_teste/ks.gra",
-               what = numeric(),
-               size = 4,
-               n = 145*73*4)
-kf <- matrix(kf,
-            nrow = length(lon),
-            ncol = length(lat))
-
-filled.contour(b$ksm[, -c(1:5, 69:73)] ,
-               col = rainbow(30),
-               main = "R")
-filled.contour(kf[, -c(1:5, 69:73)],
-               col = rainbow(30),
-               main = "F77")
-filled.contour(b$ksm[, -c(1:5, 69:73)] -
-                  kf[, -c(1:5, 69:73)], col = rainbow(14))
-# beta
-bf <- readBin("../STF_teste/beta.gra",
-               what = numeric(),
-               size = 4,
-               n = 145*73*4)
-bf <- matrix(bf,
-            nrow = length(lon),
-            ncol = length(lat))
-
-filled.contour(b$betam[, -c(1:5, 69:73)] ,
-               col = rainbow(30),
-               main = "R")
-filled.contour(bf[, -c(1:5, 69:73)],
-               col = rainbow(30),
-               main = "F77")
-filled.contour(b$betam[, -c(1:5, 69:73)] -
-               bf[, -c(1:5, 69:73)],
-               col = rainbow(14),
-               main = "R - F77\n
-               Mercator funciona entre abs(60)")
+b$ksm[] <- ifelse(b$ksm[] >= 16 |
+                  b$ksm[] <= 0, NA, b$ksm[])
+cores <- c("#ff0000","#ff5a00","#ff9a00","#ffce00","#f0ff00")
+graphics::filled.contour(b$ksm[, -c(1:5, 69:73)] ,
+                         col = rev(colorRampPalette(cores, bias = 0.5)(20)),
+                         main = "Ks")
 }
 }

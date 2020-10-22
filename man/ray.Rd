@@ -14,7 +14,7 @@ ray(
   dt,
   itime,
   direction,
-  interpolation,
+  interpolation = "trin",
   tl = 1,
   a = 6371000,
   verbose = FALSE,
@@ -23,28 +23,29 @@ ray(
 }
 \arguments{
 \item{betam}{matrix (longitude = rows x latitude from minor to
-major = columns) obtained with \code{\link{betaks}}. betam is the
+major = columns) obtained with \code{\link{betaks}}. \strong{betam} is the
 meridional gradient of the absolute vorticity in mercator coordinates}
 
 \item{u}{matrix (longitude = rows x latitude from minor to
-major = columns) obtained with \code{\link{betaks}}. Is the zonal wind in the
-appropriate format for the \code{ray}}
+major = columns) obtained with \code{\link{betaks}}. Is the zonal wind speed
+in the appropriate format for the \code{ray}. It will be converted in mercator
+coordinates inside the \code{ray}}
 
 \item{lat}{Numeric vector of latitudes from minor to major
 (ex: -90 to 90). Obtained with \code{\link{betaks}}}
 
-\item{x0}{Numeric value. First longitude (0 to 360 degrees)}
+\item{x0}{Numeric value. Initial longitude (choose between -180 to 180)}
 
-\item{y0}{Numeric value. First latitude}
+\item{y0}{Numeric value. Initial latitude}
 
 \item{K}{Numeric value; Total Rossby wavenumber}
 
-\item{dt}{Numeric value; Timestep for integration (seconds)}
+\item{dt}{Numeric value; Timestep for integration (hours)}
 
 \item{itime}{Numeric value; total integration time. For instance, 10 days
-times 4 times per day.}
+times 4 times per day}
 
-\item{direction}{Numeric value (possibilities: 1 or -1).
+\item{direction}{Numeric value (possibilities: 1 or -1)
 It controls the wave displacement:
 If 1, the wave goes to the north of the source;
 If -1, the wave goes to the south of the source.}
@@ -54,7 +55,7 @@ If -1, the wave goes to the south of the source.}
 
 \item{tl}{Numeric value; Turning latitude. Do not change this!
 It will always start with a positive tl (1) and automatically
-change to negative (-1) after the turning latitude.}
+change to negative (-1) after the turning latitude}
 
 \item{a}{Earth's radio (m)}
 
@@ -69,57 +70,39 @@ sf data.frame
 }
 \description{
 \code{ray} returns the Rossby wave ray paths (lat/lon) triggered from
-an initial source/position (x0, y0), a total wavenumber (K), and direction
-set up when invoking the function.
+one initial source/position (x0, y0), one total wavenumber (K), and one
+direction set up when invoking the function.
 \code{ray} must ingest the meridional gradient of the absolute vorticity
 in mercator coordinates\strong{betam}, the zonal mean wind \strong{u},
 and the latitude vector (\strong{lat}). Those variables can be obtained
-(recommended) using \code{\link{betaks}} function.
+(recommended) using \code{\link{betaks}} function. The zonal means of the
+basic state will be calculated along the \strong{ray} program, as well as
+the conversion to mercator coordinates of \strong{u}.
 }
 \examples{
 {
-# For Magana and Ambrizzi (1998):
-rm(list = ls()); graphics.off(); gc()
-input <- system.file("extdata",
-                     "uwnd.mon.mean_300hPa_1997-98DJF.nc",
-                      package = "raytracing")
-b <- betaks(u = input)
-ma98 <- ray(betam = b$betam,
-                u = b$u,
-                lat = b$lat,
-                K = 3,
-                itime = 10*4,
-                x0 = -130,
-                y0 = -15,
-                dt = 6,
-                direction = -1,
-                interpolation = "trin")
-plot(y = ma98$lat, x = ma98$lon, type = "b")
-# selecting 0 and 12
-#ma98 <- ma98[ma98$iday \%in\% c(0,12),]
-plot(ma98$geometry, reset = F, axes = TRUE)
-r1 <- ray_path(ma98$lon, ma98$lat)
-plot(r1, add = TRUE)
 # For Coelho et al. (2015):
 rm(list = ls()); graphics.off(); gc()
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
-                      package = "raytracing")
+                     package = "raytracing")
 b <- betaks(u = input)
-co2015 <- ray(betam = b$betam,
-                u = b$u,
-                lat = b$lat,
-                K = 3,
-                itime = 10 * 4,
-                x0 = -135,
-                y0 = -30,
-                dt = 6,
-                direction = -1, interpolation = "trin")
-plot(y = co2015$lat, x = co2015$lon)
-co2015 <- co2015[co2015$iday \%in\% c(0,6,12,18),]
-plot(co2015$geometry, reset = FALSE, axes = TRUE)
-r1 <- ray_path(co2015$lon, co2015$lat)
-plot(r1, add = TRUE)
+rt <- ray(betam = b$betam,
+          u = b$u,
+          lat = b$lat,
+          K = 3,
+          itime = 10 * 4,
+          x0 = -130,
+          y0 = -30,
+          dt = 6,
+          direction = -1,
+          interpolation = "trin")
+rp <- ray_path(rt$lon, rt$lat)
+plot(rp,
+     main = "Coelho et al. (2015): JFM/2015",
+     axes = TRUE,
+     cex = 2,
+     graticule = TRUE)
 }
 }
 \seealso{

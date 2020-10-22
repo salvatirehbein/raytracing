@@ -1,20 +1,20 @@
-# ypos function test ####
-test_that("ypos works", {
-  expect_equal(ypos(y = -30,
-                    lat = seq(-90, 90, 2.5)),
-               25)
-})
-
 # betaks function test ####
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                      package = "raytracing")
 # Test the plots
-b <- betaks(ifile = input, plots = TRUE)
-# Test the if's
+b <- betaks(u = input, plots = TRUE)
+
+# ypos function test ####
+test_that("ypos works", {
+  expect_equal(ypos(y = -30,
+                    yk = rev(colMeans(b$u)),
+                    lat = seq(90, -90, -2.5)),
+               16.842706048)
+})
 
 # Test the netcdf output
-b <- suppressWarnings(betaks(ifile = input,
+b <- suppressWarnings(betaks(u = input,
                              ofile = tempfile(),
                              show.warnings = TRUE))
 
@@ -22,9 +22,9 @@ b <- suppressWarnings(betaks(ifile = input,
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                      package = "raytracing")
-b <- betaks(ifile = input)
-a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
-                umz = colMeans(b$um, na.rm = TRUE),
+b <- betaks(u = input)
+a <- ray(betam = b$betam,
+                u = b$u,
                 lat = b$lat,
                 K = 3,
                 itime = 6,
@@ -35,9 +35,9 @@ a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
                 ofile = tempfile())
 
 test_that("ray works", {
-  expect_equal(round(a$umz_y1[1]), 22)
-  expect_message(ray(betamz = colMeans(b$betam, na.rm = TRUE),
-                            umz = colMeans(b$um, na.rm = TRUE),
+  expect_equal(round(a$iday[1]), 0)
+  expect_message(ray(betam = b$betam,
+                            u = b$u,
                             lat = b$lat,
                             K = 3,
                             itime = 30,
@@ -46,8 +46,6 @@ test_that("ray works", {
                             dt = 6 * 60 * 60,
                             direction = -1,
                             verbose = TRUE),
-                 paste0("|x0 - x2| & |y0 - y2| differences are almost 0 --> ",
-                        "The wave is not propagating. \n",
-                        "Leaving parent while loop 2\n"))
+                 ".?")
 })
 

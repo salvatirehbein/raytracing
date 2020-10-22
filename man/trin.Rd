@@ -15,11 +15,6 @@ For instance, umz or betam}
 
 \item{mercator}{Logical. Is it require to transform the final data
 in mercator coordinates? Default is FALSE.}
-
-\item{betamz}{meridional gradient of the absolute vorticity
-in Mercator coordinates}
-
-\item{nlat}{Numeric. The total latitudes of the vector yk.}
 }
 \value{
 Numeric value

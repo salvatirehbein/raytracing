@@ -4,14 +4,10 @@
 #' passed basic state variable and the requested latitude
 #'
 #' @family Interpolation
-#' @param betamz meridional gradient of the absolute vorticity
-#'  in Mercator coordinates
-# #' @param umz zonal wind in mercator coordinates
 #' @param y Numeric. The latitude where the interpolation is
 #' required
 #' @param yk Numeric vector of the data to be interpolated.
 #' For instance, umz or betam
-#' @param nlat Numeric. The total latitudes of the vector yk.
 #' @param mercator Logical. Is it require to transform the final data
 #' in mercator coordinates? Default is FALSE.
 #' @seealso \code{\link{ypos}} \code{\link{ray}}  \code{\link{ray_source}}

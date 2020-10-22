@@ -1,34 +1,38 @@
 #' Calculate the Rossby waves ray paths over a source region
 #'
-#' \code{ray_source} must ingest the zonal means of \strong{betam} and
-#' \strong{um}, plus the latitude vector (\strong{lat}). \code{ray_source}
-#' returns the Rossby wave ray paths (lat/lon) triggered according a set of
-#' experiments. The ray paths will be calculated for the combination
-#' of initial sources/positions (x0, y0), total wavenumbers (K),
-#' and directions, using the same basic state given by  \code{\link{betaks}}.
+#' \code{ray_source} returns the Rossby wave ray paths (lat/lon) triggered from
+#' one or more initial source/position (x0, y0), one or more total
+#' wavenumber (K), and one or more direction set up when invoking the function.
+#' \code{ray_source} must ingest the meridional gradient of the absolute
+#' vorticity in mercator coordinates\strong{betam}, the zonal mean wind
+#' \strong{u}, and the latitude vector (\strong{lat}). Those variables can be
+#' obtained (recommended) using \code{\link{betaks}} function. The zonal means
+#' of the basic state will be calculated along the \strong{ray} program, as well
+#' as the conversion to mercator coordinates of \strong{u}.
+#' The resultant output is a spatial feature object from a combination of
+#' initial and final positions/sources, total wavenumbers (K), and directions.
 #'
-#' @param betamz zonal mean of \strong{betam}. \strong{betam} is a
-#' matrix (longitude = rows x latitude from minor to major = columns)
-#' obtained with \code{\link{betaks}}. It is suggested to use
-#' \code{\link{colMeans}} base R function in order to obtain the
-#' zonal mean of \strong{betam}.
-#' @param umz  zonal mean of \strong{um}. \strong{um} is a
-#' matrix (longitude = rows x latitude from minor to major = columns)
-#' obtained with \code{\link{betaks}}. It is suggested to use
-#' \code{\link{colMeans}} base R function in order to obtain the
-#' zonal mean of \strong{um}.
-#' @param x0 Vector with longitudes (0 to 360 degrees)
-#' @param y0 Vector with latitudes
+#' @param betam matrix (longitude = rows x latitude from minor to
+#' major = columns) obtained with \code{\link{betaks}}. \strong{betam} is the
+#' meridional gradient of the absolute vorticity in mercator coordinates
+#' @param u matrix (longitude = rows x latitude from minor to
+#' major = columns) obtained with \code{\link{betaks}}. Is the zonal wind speed
+#' in the appropriate format for the \code{ray}. It will be converted in mercator
+#' coordinates inside the \code{ray}
+#' @param x0 Vector with the initial longitudes (choose between -180 to 180)
+#' @param y0 Vector with the initial latitudes
 #' @param lat Numeric vector of latitudes from minor to major
-#'  (ex: -90 to 90)
+#'  (ex: -90 to 90). Obtained with \code{\link{betaks}}
 #' @param K Vector; Total Rossby wavenumber
-#' @param dt Numeric value; Timestep for integration (seconds)
-#' @param itime Numeric value; total integration time
+#' @param dt Numeric value; Timestep for integration (hours)
+#' @param itime Numeric value; total integration time. For instance, 10 days
+#' times 4 times per day
 #' @param direction Vector with two possibilities: 1 or -1
 #' It controls the wave displacement:
 #' If 1, the wave goes to the north of the source;
 #' If -1, the wave goes to the south of the source.
-#' @param interpolate Logical, use \code{\link{trin}}, TRUE or FALSE
+#' @param interpolation Character. Set the interpolation method to be used:
+#' \code{\link{trin}} or \code{\link{ypos}}
 #' @param tl Numeric value; Turning latitude. Do not change this!
 #' It will always start with a positive tl (1) and automatically
 #'  change to negative (-1) after the turning latitude.
@@ -41,41 +45,44 @@
 #' @importFrom utils write.csv
 #' @export
 #' @examples {
+#' rm(list = ls()); graphics.off(); gc()
 #' input <- system.file("extdata",
-#'                      "uwnd.mon.mean_300hPa_1997-98DJF.nc",
+#'                      "uwnd.mon.mean_200hPa_2014JFM.nc",
 #'                       package = "raytracing")
 #' b <- betaks(u = input)
-#' r1 <- ray_source(betam = b$betam,
+#' rt <- ray_source(betam = b$betam,
 #'                  u = b$u,
 #'                  lat = b$lat,
+#'                  K = 3,
+#'                  itime = 10*4,
+#'                  x0 = -c(130, 135),
+#'                  y0 = -30,
+#'                  dt = 6,
 #'                  direction = -1,
-#'                  x0 =  -130,#-seq(129,131, 0.5),
-#'                  y0 = -17.06,#-seq(17,17.08, 0.01),
-#'                  K = c(3),
-#'                  dt = 12,
-#'                  itime = 20*2, interpolation = "trin")
-#' rl <- ray_path(r1$lon, r1$lat)
-#' plot(r1$geometry, reset = F, axes = T)
-#' plot(rl, col = "red", add = T)
-#' # Simple plot:
-#'# r1 <- r1[r1$iday %in% c(0,12),]
-#' plot(r1["id"], axes = T, key.pos = 3)
-#' plot(r1["id"],
-#'      axes = TRUE,
-#'      reset = FALSE,
-#'      key.pos = 1,
-#'      pal = c("red", "blue", "black"),
-#'      pch = 16,
-#'      key.length = 1)
-#' lrs <- split(r1, r1$id)
-#'
-#' rl <- lapply(seq_along(lrs), function(i){
-#'   x <- ray_path(x = lrs[[i]]$lon, y = lrs[[i]]$lat)
+#'                  interpolation = "trin")
+#' l <- split(rt, rt$id)
+#' dl <- lapply(seq_along(l), function(i){
+#'              sf::st_as_sf(sf::st_set_geometry(l[[i]], NULL),
+#'               geometry = ray_path(x = l[[i]]$lon,
+#'                                   y = l[[i]]$lat))
 #' })
-#' plot(rl[[1]], add = T, col = "red")
-#' plot(rl[[2]], add = T, col = "blue")
-#' plot(rl[[3]], add = T, col = "black")
+#' rp2 <- do.call("rbind", dl)
+#' xrp <- rbind(rt, rp2)
+#' rp <- ray_path(rt$lon, rt$lat)
 #'
+#' # Plot:
+#' ww <- sf::st_as_sf(maps::map(plot = FALSE, fill = TRUE))
+#' ww <- sf::st_union(ww)
+#' plot(ww,
+#'      reset = FALSE,
+#'      axes = TRUE,
+#'      graticule = TRUE,
+#'      col = "grey",
+#'      main = "Coelho et al. (2015): JFM/2015")
+#' plot(rp2["lon_ini"],
+#'      add = TRUE,
+#'      cex = 10,
+#'      pal = colorRampPalette(c("black", "blue")))
 #'}
 ray_source <- function(betam,
                        u,
@@ -86,7 +93,7 @@ ray_source <- function(betam,
                        dt,
                        itime,
                        direction,
-                       interpolation = "ypos",
+                       interpolation = "trin",
                        tl = 1,
                        a = 6371000,
                        verbose = FALSE,
@@ -111,9 +118,8 @@ ray_source <- function(betam,
                   x0 = df$lon[j],
                   y0 = df$lat[j],
                   verbose = verbose),
-              par = j, # de coordenadas x0 y0
-              id = paste0("K:",wn[k],
-                         ", (x0,y0):(",df$lon[j],",",df$lat[j],")"))
+              id = paste0("K",wn[k],"_lati",df$lat[j],"_loni",df$lon[j]),
+              direction = dir[i])
       })
         do.call("rbind", dwn)
     })

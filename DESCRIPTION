@@ -1,7 +1,7 @@
 Package: raytracing
 Title: Rossby Wave Ray Tracing
-Version: 0.0.0.9000
-Date: 2020-09-16
+Version: 0.1.0
+Date: 2020-10-22
 Authors@R: c(person(given = "Amanda",
                     family = "Rehbein",
                     role = c("aut", "cre"),
@@ -35,7 +35,6 @@ Encoding: UTF-8
 LazyData: true
 Imports: ncdf4, graphics, sf, units, utils
 Suggests: 
-    ggplot2,
     maps,
     testthat,
     covr,
