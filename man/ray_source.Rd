@@ -98,15 +98,6 @@ rt <- ray_source(betam = b$betam,
                  dt = 6,
                  direction = -1,
                  interpolation = "trin")
-l <- split(rt, rt$id)
-dl <- lapply(seq_along(l), function(i){
-             sf::st_as_sf(sf::st_set_geometry(l[[i]], NULL),
-              geometry = ray_path(x = l[[i]]$lon,
-                                  y = l[[i]]$lat))
-})
-rp2 <- do.call("rbind", dl)
-xrp <- rbind(rt, rp2)
-rp <- ray_path(rt$lon, rt$lat)
 
 # Plot:
 ww <- sf::st_as_sf(maps::map(plot = FALSE, fill = TRUE))
@@ -116,10 +107,10 @@ plot(ww,
      axes = TRUE,
      graticule = TRUE,
      col = "grey",
-     main = "Coelho et al. (2015): JFM/2015")
-plot(rp2["lon_ini"],
+     main = "Coelho et al. (2015): JFM/2014")
+plot(rt["lon_ini"],
      add = TRUE,
-     cex = 10,
+     lwd = 2,
      pal = colorRampPalette(c("black", "blue")))
 }
 }

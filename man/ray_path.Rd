@@ -12,12 +12,12 @@ ray_path(x, y)
 \item{y}{vector with the latitude obtained with \code{ray} or \code{ray_source}}
 }
 \value{
-sf data.frame
+sfc_LINESTRING sfc
 }
 \description{
-This function calculates the great circles using the (x0, y0) obtained
-with \code{ray} or \code{ray_source}. It returns a LINESTRING geometry that is ready
-for plot.
+This function calculates the great circles using the (lat, lon) coordinates
+obtained with \code{ray} or \code{ray_source}. It returns a LINESTRING geometry that
+is ready for plot.
 }
 \examples{
 {

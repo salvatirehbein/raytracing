@@ -99,7 +99,7 @@ rt <- ray(betam = b$betam,
           interpolation = "trin")
 rp <- ray_path(rt$lon, rt$lat)
 plot(rp,
-     main = "Coelho et al. (2015): JFM/2015",
+     main = "Coelho et al. (2015): JFM/2014",
      axes = TRUE,
      cex = 2,
      graticule = TRUE)

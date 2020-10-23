@@ -60,15 +60,6 @@
 #'                  dt = 6,
 #'                  direction = -1,
 #'                  interpolation = "trin")
-#' l <- split(rt, rt$id)
-#' dl <- lapply(seq_along(l), function(i){
-#'              sf::st_as_sf(sf::st_set_geometry(l[[i]], NULL),
-#'               geometry = ray_path(x = l[[i]]$lon,
-#'                                   y = l[[i]]$lat))
-#' })
-#' rp2 <- do.call("rbind", dl)
-#' xrp <- rbind(rt, rp2)
-#' rp <- ray_path(rt$lon, rt$lat)
 #'
 #' # Plot:
 #' ww <- sf::st_as_sf(maps::map(plot = FALSE, fill = TRUE))
@@ -78,10 +69,10 @@
 #'      axes = TRUE,
 #'      graticule = TRUE,
 #'      col = "grey",
-#'      main = "Coelho et al. (2015): JFM/2015")
-#' plot(rp2["lon_ini"],
+#'      main = "Coelho et al. (2015): JFM/2014")
+#' plot(rt["lon_ini"],
 #'      add = TRUE,
-#'      cex = 10,
+#'      lwd = 2,
 #'      pal = colorRampPalette(c("black", "blue")))
 #'}
 ray_source <- function(betam,
@@ -107,7 +98,7 @@ ray_source <- function(betam,
   ddir <- lapply(seq_along(dir), function(i){
     ddf <- lapply(1:nrow(df), function(j){
       dwn <- lapply(1:length(wn), function(k){
-        cbind(ray(betam = betam,
+       dx <- cbind(ray(betam = betam,
                   u = u,
                   lat = lat,
                   itime = itime,
@@ -120,6 +111,10 @@ ray_source <- function(betam,
                   verbose = verbose),
               id = paste0("K",wn[k],"_lati",df$lat[j],"_loni",df$lon[j]),
               direction = dir[i])
+       dl <- sf::st_as_sf(sf::st_set_geometry(dx, NULL),
+                          geometry = ray_path(x = dx$lon,
+                                              y = dx$lat))
+       rbind(dx, dl)
       })
         do.call("rbind", dwn)
     })

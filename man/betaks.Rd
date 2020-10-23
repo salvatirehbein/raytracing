@@ -18,13 +18,20 @@ betaks(
 \arguments{
 \item{u}{String indicating the input data filename. The file to be
 passed consists in a netCDF file with only time-mean zonal wind at one
-pressure level and with latitude in ascending order (not a requisite).
+pressure level, latitude in ascending order (not a requisite), and longitude
+from 0 to 360.
 It is required that the read dimensions express
-longitude (in rows) x latitude (in columns)}
+longitude (in rows) x latitude (in columns).
+\strong{u} also can be a numerical matrix with time-mean zonal wind at one
+pressure level, latitude in ascending order (not a requisite), and longitude
+from 0 to 360. It is required that the read dimensions express longitude
+(in rows) x latitude (in columns).}
 
-\item{lat}{String indicating the name of the latitude field}
+\item{lat}{String indicating the name of the latitude field. If
+\strong{u} is a matrix, \strong{lat} must be numeric.}
 
-\item{lon}{String indicating the name of the longitude field}
+\item{lon}{String indicating the name of the longitude field.If
+\strong{u} is a matrix, \strong{lat} must be numeric from 0 to 360.}
 
 \item{uname}{String indicating the variable name field}
 

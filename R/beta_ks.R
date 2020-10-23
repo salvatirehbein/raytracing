@@ -10,14 +10,21 @@
 #'
 #' @param u String indicating the input data filename. The file to be
 #' passed consists in a netCDF file with only time-mean zonal wind at one
-#' pressure level and with latitude in ascending order (not a requisite).
+#' pressure level, latitude in ascending order (not a requisite), and longitude
+#' from 0 to 360.
 #' It is required that the read dimensions express
-#' longitude (in rows) x latitude (in columns)
+#' longitude (in rows) x latitude (in columns).
+#' \strong{u} also can be a numerical matrix with time-mean zonal wind at one
+#' pressure level, latitude in ascending order (not a requisite), and longitude
+#' from 0 to 360. It is required that the read dimensions express longitude
+#' (in rows) x latitude (in columns).
 #' @param ofile String indicating the file name for store output data.
 #' If missing, will not return a netCDF file
 #' @param uname String indicating the variable name field
-#' @param lat String indicating the name of the latitude field
-#' @param lon String indicating the name of the longitude field
+#' @param lat String indicating the name of the latitude field. If
+#' \strong{u} is a matrix, \strong{lat} must be numeric.
+#' @param lon String indicating the name of the longitude field.If
+#' \strong{u} is a matrix, \strong{lat} must be numeric from 0 to 360.
 #' @param a Numeric indicating the Earth's radio (m)
 #' @param plots Logical, if TRUE will produce filled.countour plots
 #' @param show.warnings Logical, if TRUE will warns about NaNs in sqrt(<0)
@@ -178,11 +185,38 @@ betaks <- function(u,
   if(plots) graphics::hist(ks_mercator, main = "Ks")
   if(plots) graphics::filled.contour(ks_mercator, main = "Ks")
 
+  # Adding sf objects
+  # grid
+  bb <- c(xmin = min(lon - 180),
+          ymin = min(lat),
+          xmax = max(lon - 180),
+          ymax = max(lat))
+
+  bb <- sf::st_bbox(bb)
+
+  g <- sf::st_make_grid(sf::st_as_sfc(bb), n = c(nlon, nlat))
+
+  u_sf <- rbind(u[(nrow(u)/2 + 1):nrow(u), ],
+                u[1:(nrow(u)/2), ])
+
+  betam_sf <- rbind(beta_mercator[(nrow(beta_mercator)/2 + 1):nrow(beta_mercator), ],
+                    beta_mercator[1:(nrow(beta_mercator)/2), ])
+
+  ksm_sf <- rbind(ks_mercator[(nrow(ks_mercator)/2 + 1):nrow(ks_mercator), ],
+                  ks_mercator[1:(nrow(ks_mercator)/2), ])
+
+  sfpoly <- st_sf(data.frame(u = as.vector(u_sf)[1:length(g)],
+                         betam = as.vector(betam_sf)[1:length(g)],
+                         ksm = as.vector(ksm_sf)[1:length(g)]),
+              geometry = g,
+              crs = 4326)
+
   if(missing(ofile)){
     return(list(lat = phi,
                 u = u,
                 betam = beta_mercator,
-                ksm = ks_mercator))
+                ksm = ks_mercator,
+                sfpoly = sfpoly))
   } else {
     cat("Writting the netcdf in ",ofile,"...\n")
 
@@ -385,7 +419,8 @@ betaks <- function(u,
     return(list(lat = phi,
                 u = u,
                 betam = beta_mercator,
-                ksm = ks_mercator))
+                ksm = ks_mercator,
+                sfpoly = sfpoly))
 
   }
 }

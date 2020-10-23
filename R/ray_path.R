@@ -1,12 +1,12 @@
 #' Calculate the ray paths / great circles
 #'
-#' This function calculates the great circles using the (x0, y0) obtained
-#' with `ray` or `ray_source`. It returns a LINESTRING geometry that is ready
-#' for plot.
+#' This function calculates the great circles using the (lat, lon) coordinates
+#' obtained with `ray` or `ray_source`. It returns a LINESTRING geometry that
+#' is ready for plot.
 #'
 #' @param x vector with the longitude obtained with `ray` or `ray_source`
 #' @param y vector with the latitude obtained with `ray` or `ray_source`
-#' @return  sf data.frame
+#' @return  sfc_LINESTRING sfc
 #' @importFrom sf st_linestring st_as_sfc st_segmentize st_shift_longitude
 #' @importFrom units set_units
 #' @export
