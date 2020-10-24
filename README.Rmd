@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Raytracing Documentation
 
-The identification of the atmospheric Rossby wave ray paths is of paramount importance for scientists, climatologists, meteorologists and students seeking for a better understanding of the dynamics of the atmosphere. `raytracing` is designed to detects the triggering regions of Rossby waves, their characteristics, and their paths, in a completely automated way. 
+The identification of the atmospheric Rossby wave ray paths is of paramount importance for atmospheric scientists, climatologists, meteorologists, and students in order to research, assign, monitor and forecast weather and climate patterns. `raytracing` is designed to detect Rossby waves trigger regions, characteristics, and paths, using a zonally symmetric basic state. 
 
 It relies on the theory described in:
 
@@ -21,7 +21,7 @@ It relies on the theory described in:
 * [Hoskins and Ambrizzi (1993)](https://journals.ametsoc.org/jas/article/50/12/1661/23207/Rossby-Wave-Propagation-on-a-Realistic)
 * [Yang and Hoskins (1996)](https://journals.ametsoc.org/jas/article/53/16/2365/24038/Propagation-of-Rossby-Waves-of-Nonzero-Frequency)
 
-For a brief review: Rehbein et al. (2020) <>
+For a brief review, see Rehbein et al. (2020).
 
 ## Including Code
 
@@ -30,20 +30,34 @@ The ```raytracing``` include the below functions:
 ```{r funcoes, echo = FALSE}
 library(knitr)
 df <- data.frame(
-  Functions = c("calcUg", "calcVg", "betaks", "ray", "ypos"),
-  Arguments = c("betamz, umz, y, lat, K, a", 
-                "betamz, umz, y, lat, K, direction, tl, a",
-                "ifile, varname, latname, lonname, ofile, a, plots, show.warnings",
-                "betamz, umz, lat, x0, y0, K, dt,  itime, direction, tl, a",
-                "y, lat"), 
-  Description = c("Calculates the zonal group velocity", 
-                  "Calculates the meridional group velocity",
-                  "Calculates the stationary Rossby wave number, meridional gradient of the absolute vorticity, and zonal wind in mercator coordinates",
-                  "Calculates the Rossby wave ray paths",
-                  "Obtain the closest position of a latitude in a vector")
+  Functions = c("betaks", "ray", "ray_path", "ray_source", "trin", "ypos"),
+  Arguments = c("u, lat, lon, uname, ofile, a, plots, show.warnings", 
+                "betam, u, lat, x0, y0, K, dt, itime, direction, interpolation, tl, a, verbose, ofile",
+                "x, y",
+                "betam, u, lat, x0, y0, K, dt, itime, direction, interpolation, tl, a, verbose, ofile",
+                "y, yk, mercator",
+                "y, lat, yk, mercator"), 
+  Description = c("Calculates Beta and Ks",
+                  "Calculates the Rossby waves ray paths",
+                  "Calculate the ray paths / great circles",
+                  "Calculate the Rossby waves ray paths over a source region",
+                  "Performs trigonometric interpolation", 
+                  "Interpolation selecting the nearest neighbor")
 )
 knitr::kable(x = df, caption = "**Table** **1** **-** ```raytracing``` functions, arguments, and its description.")
 ```
+
+## Instalation
+To install the CRAN version:
+```r
+install.packages("raytracing")
+```
+
+To install the developing version:
+```r
+remotes::install_github("salvatirehbein/raytracing")
+```
+
 
 ## Example
 
@@ -54,65 +68,59 @@ library(raytracing, quietly = TRUE)
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                      package = "raytracing")
-b <- betaks(ifile = input)
-a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
-         umz = colMeans(b$um, na.rm = TRUE),
-         lat = b$lat,
-         K = 3,
-         itime = 30,
-         x0 = -135 + 360,
-         y0 = -30,
-         dt = 6 * 60 * 60,
-         direction = -1,
-         verbose = FALSE)
-library(ggplot2)
-ww <- map_data('world', ylim=c(-60,60))
-
-ggplot() +  theme_bw() +
-  scale_y_continuous(limits = c(-60,60)) +
-  geom_polygon(data = ww,
-               aes(x = long, y = lat, group = group),
-               alpha = 0.0, col = "grey") +
-  geom_point(data = a[!(a$tun_y0 == -1 |
-                          a$tun_y1 == -1 | a$id == 0), ],
-             aes(x = x0 - 360, y = y0), size = 3) +
-  geom_line(data = a[!(a$tun_y0 == -1 |
-                         a$tun_y1 == -1 | a$id == 0), ],
-            aes(x = x0 - 360, y = y0)) +
-  ggtitle("Coelho et al. (2015): JFM/2014, K = 3, (x0 = 135ºW, y0 = 30ºS)") +
-  ylab(NULL) + xlab(NULL)
+b <- betaks(u = input)
+rt <- ray_source(betam = b$betam,
+                 u = b$u,
+                 lat = b$lat,
+                 K = 3,
+                 itime = 10*4,
+                 x0 = -c(130, 135),
+                 y0 = -30,
+                 dt = 6,
+                 direction = -1,
+                 interpolation = "trin")
 ```
 
-The ```ray``` or the ```ray_source``` functions return a ```data.table``` exampled below:
+The ```ray``` or the ```ray_source``` functions return a ```sf``` ```data.table``` as below:
 
-```
-head(a)
-```
-
-```{r cabecalho, echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
-input <- system.file("extdata",
-                     "uwnd.mon.mean_200hPa_2014JFM.nc",
-                     package = "raytracing")
-b <- betaks(ifile = input)
-a <- ray(betamz = colMeans(b$betam, na.rm = TRUE),
-         umz = colMeans(b$um, na.rm = TRUE),
-         lat = b$lat,
-         K = 3,
-         itime = 30,
-         x0 = -135 + 360,
-         y0 = -30,
-         dt = 6 * 60 * 60,
-         direction = -1,
-         verbose = FALSE)
+```{r cabecalho, echo=TRUE}
+head(rt)
 ```
 
-## Installing
-
-Install development versions from github with
-
+```{r rodape, echo=TRUE}
+tail(rt)
 ```
-library(devtools)
-install_github("salvatirehbein/raytracing")
+
+
+```{r plot, echo=TRUE, fig.height=4, fig.width=10, warning=FALSE, message=TRUE}
+# Large stationary wave numbers (Ks) or short wavelength are set to be Ks = 10
+b$sfpoly$ksm <- ifelse(b$sfpoly$ksm > 10 & b$sfpoly$ksm <= 20, 10, 
+                ifelse(b$sfpoly$ksm >=30 | b$sfpoly$ksm < 0, NA, 
+                b$sfpoly$ksm))
+# Plot Ks
+plot(b$sfpoly["ksm"],
+     lty = 0,
+     axes = TRUE, 
+     reset = FALSE,
+     breaks = seq(0, 10, 2),
+     pal= c("#f0ff00", "#ffce00", "#ff9a00", "#ff5a00", "#ff0000"),
+     main = "Stationary Wave Number and Ray Tracings: JFM/2014")
+
+# Plot contour maps
+ww <- sf::st_as_sf(maps::map(plot = FALSE, fill = TRUE))
+ww <- sf::st_union(ww)
+plot(ww, add = TRUE)
+
+# Select linestrings for plotting only the lines
+li <- rt[st_is(rt$geometry, "LINESTRING"), ]
+
+# Plot ray traces
+plot(li["lon_ini"],
+    add = TRUE,
+    lwd = 2,
+    pal = colorRampPalette(c("black", "blue")))
 ```
+This figure is a reproduction of the Figure 9 from [Coelho et al. (2015)](https://link.springer.com/article/10.1007/s00382-015-2800-1).
+
 
 

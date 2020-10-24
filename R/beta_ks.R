@@ -1,4 +1,4 @@
-#' Calculates Beta and Ks  GitHub
+#' Calculates Beta and Ks
 #'
 #' \code{betaks} ingests the time-mean zonal wind (u), transform it in
 #' mercator coordinates (um); calculates the meridional gradient of
@@ -205,9 +205,9 @@ betaks <- function(u,
   ksm_sf <- rbind(ks_mercator[(nrow(ks_mercator)/2 + 1):nrow(ks_mercator), ],
                   ks_mercator[1:(nrow(ks_mercator)/2), ])
 
-  sfpoly <- st_sf(data.frame(u = as.vector(u_sf)[1:length(g)],
-                         betam = as.vector(betam_sf)[1:length(g)],
-                         ksm = as.vector(ksm_sf)[1:length(g)]),
+  sfpoly <- sf::st_sf(data.frame(u = as.vector(u_sf)[1:length(g)],
+                                 betam = as.vector(betam_sf)[1:length(g)],
+                                 ksm = as.vector(ksm_sf)[1:length(g)]),
               geometry = g,
               crs = 4326)
 

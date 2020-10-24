@@ -1,4 +1,4 @@
-#' Trigonometric interpolation
+#' Performs trigonometric interpolation
 #'
 #' This function performs trigonometric interpolation for the
 #' passed basic state variable and the requested latitude

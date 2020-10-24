@@ -2,7 +2,7 @@
 % Please edit documentation in R/ypos.R
 \name{ypos}
 \alias{ypos}
-\title{Get the position of a given latitute y}
+\title{Interpolation selecting the nearest neighbor}
 \usage{
 ypos(y, lat, yk, mercator = FALSE)
 }

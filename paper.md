@@ -19,10 +19,10 @@ affiliations:
   - name: Department of Atmospheric Sciences, University of São Paulo, Rua do Matão 1226, São Paulo, SP, Brazil
     index: 1
 output:
-  word_document: default
+  pdf_document: default
   html_document:
   df_print: paged
-  pdf_document: default
+  word_document: default
 date: "18 September 2020"
 bibliography: paper.bib
 ---

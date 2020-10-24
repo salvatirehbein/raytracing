@@ -1,4 +1,4 @@
-#' Get the position of a given latitute y
+#' Interpolation selecting the nearest neighbor
 #'
 #' This function get the position in a vector of a given latitute y.
 #' @family Interpolation

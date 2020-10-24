@@ -2,7 +2,7 @@
 % Please edit documentation in R/trin.R
 \name{trin}
 \alias{trin}
-\title{Trigonometric interpolation}
+\title{Performs trigonometric interpolation}
 \usage{
 trin(y, yk, mercator = FALSE)
 }

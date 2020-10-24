@@ -2,7 +2,7 @@
 % Please edit documentation in R/beta_ks.R
 \name{betaks}
 \alias{betaks}
-\title{Calculates Beta and Ks  GitHub}
+\title{Calculates Beta and Ks}
 \usage{
 betaks(
   u,
