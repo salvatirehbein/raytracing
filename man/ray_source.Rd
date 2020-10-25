@@ -82,7 +82,7 @@ The resultant output is a spatial feature object from a combination of
 initial and final positions/sources, total wavenumbers (K), and directions.
 }
 \examples{
-\dontrun{
+{
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                       package = "raytracing")
