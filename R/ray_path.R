@@ -23,11 +23,10 @@
 #'           itime = 30,
 #'           x0 = -135,
 #'           y0 = -30,
-#'           dt = 6 * 60 * 60,
+#'           dt = 6,
 #'           direction = -1)
-#' plot(rt$geometry, axes = TRUE)
 #' rp <- ray_path(x = rt$lon, y = rt$lat)
-#' plot(rp, add = TRUE)
+#' plot(rp,  axes = TRUE, graticule = TRUE)
 #' }
 ray_path <- function(x,
                      y) {

@@ -45,7 +45,6 @@
 #' @importFrom utils write.csv
 #' @export
 #' @examples {
-#' rm(list = ls()); graphics.off(); gc()
 #' input <- system.file("extdata",
 #'                      "uwnd.mon.mean_200hPa_2014JFM.nc",
 #'                       package = "raytracing")
@@ -70,7 +69,7 @@
 #'      graticule = TRUE,
 #'      col = "grey",
 #'      main = "Coelho et al. (2015): JFM/2014")
-#' plot(rt["lon_ini"],
+#' plot(rt[sf::st_is(rt, "LINESTRING"),]["lon_ini"],
 #'      add = TRUE,
 #'      lwd = 2,
 #'      pal = colorRampPalette(c("black", "blue")))

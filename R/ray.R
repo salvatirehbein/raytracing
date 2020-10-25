@@ -46,7 +46,6 @@
 #' @export
 #' @examples {
 #' # For Coelho et al. (2015):
-#' rm(list = ls()); graphics.off(); gc()
 #' input <- system.file("extdata",
 #'                      "uwnd.mon.mean_200hPa_2014JFM.nc",
 #'                      package = "raytracing")
