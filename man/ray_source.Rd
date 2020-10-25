@@ -82,7 +82,7 @@ The resultant output is a spatial feature object from a combination of
 initial and final positions/sources, total wavenumbers (K), and directions.
 }
 \examples{
-{
+\dontrun{
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                       package = "raytracing")
@@ -99,9 +99,8 @@ rt <- ray_source(betam = b$betam,
                  interpolation = "trin")
 
 # Plot:
-ww <- sf::st_as_sf(maps::map(plot = FALSE, fill = TRUE))
-ww <- sf::st_union(ww)
-plot(ww,
+data(coastlines)
+plot(coastlines,
      reset = FALSE,
      axes = TRUE,
      graticule = TRUE,

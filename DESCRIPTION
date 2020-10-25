@@ -32,7 +32,7 @@ Description: Rossby wave ray paths are traced from a determined source,
              <doi.org/10.1175/1520-0469(1996)053<2365:PORWON>2.0.CO;2>.
 License: GPL-3
 Encoding: UTF-8
-LazyData: true
+LazyData: no
 Imports: ncdf4, graphics, sf, units, utils
 Suggests: 
     maps,

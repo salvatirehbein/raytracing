@@ -92,7 +92,7 @@ tail(rt)
 ```
 
 
-```{r plot, echo=TRUE, fig.height=4, fig.width=10, warning=FALSE, message=TRUE}
+```{r plot, echo=TRUE, fig.height=4, fig.width=8, warning=FALSE, message=TRUE}
 # Large stationary wave numbers (Ks) or short wavelength are set to be Ks = 10
 b$sfpoly$ksm <- ifelse(b$sfpoly$ksm > 10 & b$sfpoly$ksm <= 20, 10, 
                 ifelse(b$sfpoly$ksm >=30 | b$sfpoly$ksm < 0, NA, 
@@ -107,10 +107,8 @@ plot(b$sfpoly["ksm"],
      main = "Stationary Wave Number and Ray Tracings: JFM/2014")
 
 # Plot contour maps
-ww <- sf::st_as_sf(maps::map(plot = FALSE, fill = TRUE))
-ww <- sf::st_union(ww)
-plot(ww, add = TRUE)
-
+data(coastlines)
+plot(coastlines, add = TRUE)
 # Select linestrings for plotting only the lines
 li <- rt[st_is(rt$geometry, "LINESTRING"), ]
 

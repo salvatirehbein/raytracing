@@ -129,10 +129,8 @@ plot(b$sfpoly["ksm"],
      main = "Stationary Wave Number and Ray Tracings: JFM/2014")
 
 # Plot contour maps
-ww <- sf::st_as_sf(maps::map(plot = FALSE, fill = TRUE))
-ww <- sf::st_union(ww)
-plot(ww, add = TRUE)
-
+data(coastlines)
+plot(coastlines, add = TRUE)
 # Select linestrings for plotting only the lines
 li <- rt[st_is(rt$geometry, "LINESTRING"), ]
 

@@ -61,9 +61,8 @@
 #'                  interpolation = "trin")
 #'
 #' # Plot:
-#' ww <- sf::st_as_sf(maps::map(plot = FALSE, fill = TRUE))
-#' ww <- sf::st_union(ww)
-#' plot(ww,
+#' data(coastlines)
+#' plot(coastlines,
 #'      reset = FALSE,
 #'      axes = TRUE,
 #'      graticule = TRUE,

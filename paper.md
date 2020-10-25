@@ -148,9 +148,9 @@ plot(b$sfpoly["ksm"], lty = 0, axes = T, reset = F,
      pal= rev(c("#ff0000","#ff5a00","#ff9a00","#ffce00","#f0ff00")),
      breaks = seq(0, 10, 2),
      main = "Stationary Wave Number and Ray Tracings: JFM/2014")
-ww <- sf::st_as_sf(maps::map(plot = FALSE, fill = TRUE))
-ww <- sf::st_union(ww)
-plot(ww, add = T)
+data(coastlines)
+plot(coastlines,
+     add = TRUE)
 #select lines
 li <- rt[st_is(rt$geometry, "LINESTRING"), ]
 plot(li["lon_ini"],
