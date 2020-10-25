@@ -5,7 +5,7 @@
 ^README.md$
 ^README.Rmd$
 ^README_files$
-^codecov\.yml$
+^.codecov\.yml$
 ^paper$
 ^paper.md$
 ^paper.bib$
