@@ -44,7 +44,8 @@
 #' @return  sf data.frame
 #' @importFrom utils write.csv
 #' @export
-#' @examples {
+#' @examples \dontrun{
+#' #do not run
 #' input <- system.file("extdata",
 #'                      "uwnd.mon.mean_200hPa_2014JFM.nc",
 #'                       package = "raytracing")
