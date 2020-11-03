@@ -122,3 +122,23 @@ This figure is a reproduction of the Figure 9 from [Coelho et al. (2015)](https:
 
 
 
+## citation
+
+To cite raytracing in publications use this:
+
+Rehbein, A., Ambrizzi, T., Ibarra-Espinosa, S., Dutra, L. M. M.: Rossby Wave Ray Tracing v0.1.0. https://github.com/salvatirehbein/raytracing, 2020.
+
+
+A BibTeX entry for LaTeX users is
+
+```
+@Manual{ray,
+    title = {raytracing: An R package for identification and tracking the atmospheric Rossby waves},
+    author = {Amanda Rehbein and Tercio Ambrizzi and Sergio Ibarra-Espinosa and Livia M. M. Dutra},
+    year = {2020},
+    url = {https://github.com/salvatirehbein/raytracing},
+  }
+
+```
+Thanks
+

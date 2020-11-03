@@ -1,16 +1,19 @@
 citHeader("To cite raytracing in publications use at least the first, if not both:")
 
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
 citEntry(entry = "manual",
    title          = "raytracing: An R package for identification and tracking the atmospheric Rossby waves",
    author         = personList(c(person("Amanda", "Rehbein"),
                     person("Tercio", "Ambrizzi"),
                     person("Sergio", "Ibarra-Espinosa"),
                     person("Livia M. M.", "Dutra"))),
-   year           = "2020",
+   year           = year,
    url            = "https://github.com/salvatirehbein/raytracing",
-
+   note          = note,
    textVersion  =
-   paste0("Rehbein, A., Ambrizzi, T., Ibarra-Espinosa, S., Dutra, L. M. M.: Rossby Wave Ray Tracing v", packageVersion("raytracing"), ". https://github.com/salvatirehbein/raytracing, 2020.")
+   paste0("Rehbein, A., Ambrizzi, T., Ibarra-Espinosa, S., Dutra, L. M. M.: Rossby Wave Ray Tracing v", meta$Version, ". https://github.com/salvatirehbein/raytracing, ", year,".")
 )
 
 citation(auto = meta)
