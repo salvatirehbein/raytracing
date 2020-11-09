@@ -6,16 +6,16 @@
 \alias{raytracing-package}
 \title{raytracing: Rossby Wave Ray Tracing}
 \description{
-Description: Rossby wave ray paths are traced from 
+Rossby wave ray paths are traced from 
              a determined source, specified wavenumber, and direction
-             of propagation. `raytracing` also works with a set of 
+             of propagation. "raytracing" also works with a set of 
              experiments changing these parameters, making possible the
              identification of Rossby wave sources automatically. 
              The theory used here is based on classical studies, 
-             such as Hoskins and Karoly (1981) (doi:10.1175/1520-0469(1981)038<1179:TSLROA>2.0.CO;2),
-             Karoly (1983) (doi:10.1016/0377-0265(83)90013-1), 
-             Hoskins and Ambrizzi (1993) (doi:10.1175/1520-0469(1993)050<1661:RWPOAR>2.0.CO;2),
-             and Yang and Hoskins (1996) (doi.org/10.1175/1520-0469(1996)053<2365:PORWON>2.0.CO;2).
+             such as Hoskins and Karoly (1981) <doi:10.1175/1520-0469(1981)038\%3C1179:TSLROA\%3E2.0.CO;2>,
+             Karoly (1983) <doi:10.1016/0377-0265(83)90013-1>, 
+             Hoskins and Ambrizzi (1993) <doi:10.1175/1520-0469(1993)050\%3C1661:RWPOAR\%3E2.0.CO;2>,
+             and Yang and Hoskins (1996) <doi:10.1175/1520-0469(1996)053\%3C2365:PORWON\%3E2.0.CO;2>.
 }
 \seealso{
 Useful links:
