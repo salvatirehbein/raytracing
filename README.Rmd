@@ -63,7 +63,7 @@ remotes::install_github("salvatirehbein/raytracing")
 
 Simple usage example, reproduced from [Coelho et al. (2015)](https://link.springer.com/article/10.1007/s00382-015-2800-1).
 
-```{r onda, echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
+```{r onda, echo=TRUE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
 library(raytracing, quietly = TRUE)
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
@@ -118,6 +118,7 @@ plot(li["lon_ini"],
     lwd = 2,
     pal = colorRampPalette(c("black", "blue")))
 ```
+
 This figure is a reproduction of the Figure 9 from [Coelho et al. (2015)](https://link.springer.com/article/10.1007/s00382-015-2800-1).
 
 

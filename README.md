@@ -63,6 +63,24 @@ remotes::install_github("salvatirehbein/raytracing")
 Simple usage example, reproduced from [Coelho et
 al. (2015)](https://link.springer.com/article/10.1007/s00382-015-2800-1).
 
+``` r
+library(raytracing, quietly = TRUE)
+input <- system.file("extdata",
+                     "uwnd.mon.mean_200hPa_2014JFM.nc",
+                     package = "raytracing")
+b <- betaks(u = input)
+rt <- ray_source(betam = b$betam,
+                 u = b$u,
+                 lat = b$lat,
+                 K = 3,
+                 itime = 10*4,
+                 x0 = -c(130, 135),
+                 y0 = -30,
+                 dt = 6,
+                 direction = -1,
+                 interpolation = "trin")
+```
+
 The `ray` or the `ray_source` functions return a `sf` `data.table` as
 below:
 
@@ -149,7 +167,9 @@ al. (2015)](https://link.springer.com/article/10.1007/s00382-015-2800-1).
 
 To cite raytracing in publications use this:
 
-    Rehbein, A., Ambrizzi, T., Ibarra-Espinosa, S., Dutra, L. M. M.: Rossby Wave Ray Tracing v0.1.0. https://github.com/salvatirehbein/raytracing, 2020.
+Rehbein, A., Ambrizzi, T., Ibarra-Espinosa, S., Dutra, L. M. M.: Rossby
+Wave Ray Tracing v0.1.0. <https://github.com/salvatirehbein/raytracing>,
+2020.
 
 A BibTeX entry for LaTeX users is
 
