@@ -31,7 +31,7 @@ from 0 to 360. It is required that the read dimensions express longitude
 \strong{u} is a matrix, \strong{lat} must be numeric.}
 
 \item{lon}{String indicating the name of the longitude field.If
-\strong{u} is a matrix, \strong{lat} must be numeric from 0 to 360.}
+\strong{u} is a matrix, \strong{lon} must be numeric from 0 to 360.}
 
 \item{uname}{String indicating the variable name field}
 

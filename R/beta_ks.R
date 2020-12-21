@@ -24,7 +24,7 @@
 #' @param lat String indicating the name of the latitude field. If
 #' \strong{u} is a matrix, \strong{lat} must be numeric.
 #' @param lon String indicating the name of the longitude field.If
-#' \strong{u} is a matrix, \strong{lat} must be numeric from 0 to 360.
+#' \strong{u} is a matrix, \strong{lon} must be numeric from 0 to 360.
 #' @param a Numeric indicating the Earth's radio (m)
 #' @param plots Logical, if TRUE will produce filled.countour plots
 #' @param show.warnings Logical, if TRUE will warns about NaNs in sqrt(<0)

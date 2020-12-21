@@ -7,7 +7,7 @@
 #' @param x vector with the longitude obtained with `ray` or `ray_source`
 #' @param y vector with the latitude obtained with `ray` or `ray_source`
 #' @return  sfc_LINESTRING sfc
-#' @importFrom sf st_linestring st_as_sfc st_segmentize st_shift_longitude
+#' @importFrom sf st_linestring st_as_sfc st_segmentize
 #' @importFrom units set_units
 #' @export
 #' @examples {

@@ -42,7 +42,7 @@
 #' @param verbose Boolean; if TRUE (default) return messages
 #' during compilation
 #' @return  sf data.frame
-#' @importFrom utils write.csv
+#' @importFrom sf st_as_sf st_set_geometry
 #' @export
 #' @examples \dontrun{
 #' #do not run
@@ -110,10 +110,28 @@ ray_source <- function(betam,
                   verbose = verbose),
               id = paste0("K",wn[k],"_lati",df$lat[j],"_loni",df$lon[j]),
               direction = dir[i])
-       dl <- sf::st_as_sf(sf::st_set_geometry(dx, NULL),
-                          geometry = ray_path(x = dx$lon,
-                                              y = dx$lat))
-       rbind(dx, dl)
+
+       cat(paste0("\nK = ",wn[k],"  lat = ", df$lat[j],"   lon = ",df$lon[j]),"\n")
+      # Avoid stopping when the wave does not propagates, that is,
+      # when "Error in geo[i + 1, ] : subscript out of bounds" happens
+      # #ERROR HANDLING
+      possibleError <- tryCatch(
+      dl <- sf::st_as_sf(sf::st_set_geometry(dx, NULL),
+                         geometry = ray_path(x = dx$lon,
+                                              y = dx$lat)),
+        error=function(e) e
+      )
+
+       if(!inherits(possibleError, "error")){
+       #REAL WORK
+         dl <- sf::st_as_sf(sf::st_set_geometry(dx, NULL),
+                            geometry = ray_path(x = dx$lon,
+                                                y = dx$lat))
+         rbind(dx, dl)
+       } else {
+         message(possibleError)
+         cat(paste0("\nSkipping to the next iteration... \n"))
+       }
       })
         do.call("rbind", dwn)
     })
@@ -123,7 +141,7 @@ ray_source <- function(betam,
     DF <- do.call("rbind", ddir)
 
     if(!missing(ofile)) {
-      utils::write.csv(x = DF, file = ofile, row.names = FALSE)
+      saveRDS(object = DF, file = ofile)
     }
     return(DF)
 }

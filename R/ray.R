@@ -41,7 +41,6 @@
 #' during compilation
 #' @seealso \code{\link{ray_source}}
 #' @return sf data.frame
-#' @importFrom utils write.csv
 #' @importFrom sf st_as_sf
 #' @export
 #' @examples {
@@ -207,7 +206,7 @@ ray <- function(betam,
                          crs = 4326)
 
   if(!missing(ofile)) {
-    utils::write.csv(x = pontos, file = ofile, row.names = FALSE)
+    saveRDS(object = pontos, file = ofile)
   }
   return(pontos)
 }
