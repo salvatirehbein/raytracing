@@ -6,6 +6,8 @@ Status](https://img.shields.io/travis/com/salvatirehbein/raytracing?style=for-th
 [![Codecov test
 coverage](https://codecov.io/gh/salvatirehbein/raytracing/branch/master/graph/badge.svg)](https://codecov.io/gh/salvatirehbein/raytracing?branch=master)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/raytracing?color=orange)](http://cran.r-project.org/package=raytracing)
+[![DOI](https://zenodo.org/badge/295589682.svg)](https://zenodo.org/badge/latestdoi/295589682)
+
 ## Raytracing Documentation
 
 The identification of the atmospheric Rossby wave ray paths is of
