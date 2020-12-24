@@ -83,6 +83,10 @@ ray <- function(betam,
 
   dt <- dt * 60 * 60
 
+  if(abs(x0) > 180) {
+    stop("Please enter a value x0 between -180 and 180")
+  }
+
   # must be from north to south
   if(!is.unsorted(lat)) { # is sorted from south to north
     message("Sorting latitude from north to south")
@@ -104,7 +108,6 @@ ray <- function(betam,
   l_time <- list()
   l_x0 <- list()
   l_y0 <- list()
-
 
   count <- 0
   while(TRUE) {
@@ -175,6 +178,8 @@ ray <- function(betam,
 
     x2 <- x0 + 0.5*dt*(ug0+ug1)
     y2 <- y0 + 0.5*dt*(vg0+vg1)
+
+    x2 <- ifelse(x2 > 180, x2 - 360, x2)
 
     x0 <- x2
     y0 <- y2

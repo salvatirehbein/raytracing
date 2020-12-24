@@ -23,12 +23,24 @@ input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                      package = "raytracing")
 b <- betaks(u = input)
+test_that("ray stops", {
+  expect_error(ray(betam = b$betam,
+                        u = b$u,
+                        lat = b$lat,
+                        K = 3,
+                        itime = 6,
+                        x0 = -135 + 360,
+                        y0 = -30,
+                        dt = 6 * 60 * 60),
+  ".?")
+})
+
 a <- ray(betam = b$betam,
                 u = b$u,
                 lat = b$lat,
                 K = 3,
                 itime = 6,
-                x0 = -135 + 360,
+                x0 = -135,
                 y0 = -30,
                 dt = 6 * 60 * 60,
                 direction = -1,
@@ -41,7 +53,7 @@ test_that("ray works", {
                             lat = b$lat,
                             K = 3,
                             itime = 30,
-                            x0 = -135 + 360,
+                            x0 = -135 ,
                             y0 = -30,
                             dt = 6 * 60 * 60,
                             direction = -1,
