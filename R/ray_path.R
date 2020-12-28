@@ -1,8 +1,8 @@
-#' Calculate the ray paths / great circles
+#' Calculate the ray paths / segment of great circles
 #'
-#' This function calculates the great circles using the (lat, lon) coordinates
-#' obtained with `ray` or `ray_source`. It returns a LINESTRING geometry that
-#' is ready for plot.
+#' This function calculates the segments great circles using the (lat, lon)
+#' coordinates obtained with `ray` or `ray_source`.
+#' It returns a LINESTRING geometry that is ready for plot.
 #'
 #' @param x vector with the longitude obtained with `ray` or `ray_source`
 #' @param y vector with the latitude obtained with `ray` or `ray_source`
@@ -39,8 +39,8 @@ ray_path <- function(x,
   dl[[length(dl) + 1]] <- NA
   dls <- sf::st_as_sfc(dl, crs = 4326)
 
-  # Calculate the Great Circle:
-  dfl <- sf::st_segmentize(dls, units::set_units(2, "km"))
+  # Calculate the segment of Great Circle:
+  dfl <- sf::st_segmentize(dls, units::set_units(20, "km"))
 
   return(dfl)
 

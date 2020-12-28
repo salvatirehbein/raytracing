@@ -2,7 +2,7 @@
 % Please edit documentation in R/ray_path.R
 \name{ray_path}
 \alias{ray_path}
-\title{Calculate the ray paths / great circles}
+\title{Calculate the ray paths / segment of great circles}
 \usage{
 ray_path(x, y)
 }
@@ -15,9 +15,9 @@ ray_path(x, y)
 sfc_LINESTRING sfc
 }
 \description{
-This function calculates the great circles using the (lat, lon) coordinates
-obtained with \code{ray} or \code{ray_source}. It returns a LINESTRING geometry that
-is ready for plot.
+This function calculates the segments great circles using the (lat, lon)
+coordinates obtained with \code{ray} or \code{ray_source}.
+It returns a LINESTRING geometry that is ready for plot.
 }
 \examples{
 {
