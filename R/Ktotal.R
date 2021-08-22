@@ -1,18 +1,15 @@
-#' Calculates Beta and Ks
+#' Calculates Total Wavenumber for Rossby Waves (K)
 #'
-#' \code{betaks} ingests the time-mean zonal wind (u), transform it in
-#' mercator coordinates (um); calculates the meridional gradient of
-#' the absolute vorticity (beta) in mercator coordinates (betam);
-#' and, finally, calculates stationary wavenumber (Ks) in mercator coordinates
-#' (ksm) (see: Hoskins and Ambrizzi, 1993). \code{betaks} returns the um, betam,
-#' and lat, for being ingested in \code{\link{ray}} or
-#' \code{\link{ray_source}}.
+#' \code{Ktotal} ingests the time-mean zonal wind (u) and calculates the Rossby
+#' wavenumber (K) (non-zero frequency waves) in mercator coordinates.
+#' In this code Ktotal is used to distinguish the total wavenumber (K) from
+#' zonal wave number (k). For stationary Rossby Waves, please see \code{\link{Ks}.
+#' \code{Ktotal} returns a list with K in mercator coordinates (ktotal_m).
 #'
 #' @param u String indicating the input data filename. The file to be
 #' passed consists in a netCDF file with only time-mean zonal wind at one
 #' pressure level, latitude in ascending order (not a requisite), and longitude
-#' from 0 to 360.
-#' It is required that the read dimensions express
+#' from 0 to 360. It is required that the read dimensions express
 #' longitude (in rows) x latitude (in columns).
 #' \strong{u} also can be a numerical matrix with time-mean zonal wind at one
 #' pressure level, latitude in ascending order (not a requisite), and longitude
@@ -22,13 +19,15 @@
 #' If missing, will not return a netCDF file
 #' @param uname String indicating the variable name field
 #' @param lat String indicating the name of the latitude field. If
-#' \strong{u} is a matrix, \strong{lat} must be numeric.
+#' \strong{u} is a matrix, \strong{lat} must be numeric
 #' @param lon String indicating the name of the longitude field.If
 #' \strong{u} is a matrix, \strong{lon} must be numeric from 0 to 360.
+#' @param cx numeric. Indicates the eastward phase speed. Must be greater than zero.
+#' For cx equal to zero (stationary waves see \code{\link{Ks}})
 #' @param a Numeric indicating the Earth's radio (m)
 #' @param plots Logical, if TRUE will produce filled.countour plots
 #' @param show.warnings Logical, if TRUE will warns about NaNs in sqrt(<0)
-#' @return list with one vector (lat) and 3 matrices (um, betam, and ksm)
+#' @return list with one vector (lat) and 1 matrix (ktotal_m)
 #' @importFrom ncdf4 nc_open ncvar_get nc_close ncdim_def ncvar_def
 #'  nc_create ncatt_put
 #' @importFrom graphics filled.contour
@@ -38,44 +37,21 @@
 #' input <- system.file("extdata",
 #'                      "uwnd.mon.mean_200hPa_2014JFM.nc",
 #'                       package = "raytracing")
-#' b <- betaks(u = input, plots = TRUE)
-#' b$ksm[] <- ifelse(b$ksm[] >= 16 |
-#'                   b$ksm[] <= 0, NA, b$ksm[])
+#' Ktotal <- Ktotal(u = input, cx = 6, plots = TRUE)
 #' cores <- c("#ff0000","#ff5a00","#ff9a00","#ffce00","#f0ff00")
-#' graphics::filled.contour(b$ksm[, -c(1:5, 69:73)] ,
+#' graphics::filled.contour(Ktotal$ktotal_m[, -c(1:5, 69:73)] ,
 #'                          col = rev(colorRampPalette(cores, bias = 0.5)(20)),
-#'                          main = "Ks")
-#'
-#' # u, lat and lon as numeric
-#' input <- system.file("extdata",
-#'                      "uwnd.mon.mean_200hPa_2014JFM.bin",
-#'                       package = "raytracing")
-#' u <- readBin(input,
-#'              what = numeric(),
-#'              size = 4,
-#'              n = 144*73*4)
-#' lat <- seq(-90, 90, 2.5)
-#' lon <- seq(-180, 180 - 1, 2.5)
-#' u <- matrix(u,
-#'             nrow = length(lon),
-#'             ncol = length(lat))
-#' graphics::filled.contour(u, main = "Zonal Wind Speed [m/s]")
-#' b <- betaks(u, lat, lon)
-#' b$ksm[] <- ifelse(b$ksm[] >= 16 |
-#'                   b$ksm[] <= 0, NA, b$ksm[])
-#' cores <- c("#ff0000","#ff5a00","#ff9a00","#ffce00","#f0ff00")
-#' graphics::filled.contour(b$ksm[, -c(1:5, 69:73)] ,
-#'                          col = rev(colorRampPalette(cores, bias = 0.5)(20)),
-#'                          main = "Ks")
+#'                          main = "K")
 #' }
-betaks <- function(u,
-                   lat = "lat",    # lon,
-                   lon = "lon",
-                   uname = "uwnd",   # lat
-                   ofile,
-                   a = 6371000,
-                   plots = FALSE,
-                   show.warnings = FALSE
+Ktotal <- function(u,
+               lat = "lat",      # lon,
+               lon = "lon",
+               uname = "uwnd",   # lat
+               cx,
+               ofile,
+               a = 6371000,
+               plots = FALSE,
+               show.warnings = FALSE
 ) {
   if(inherits(u, "character")){
     message("Detecting NetCDF")
@@ -87,11 +63,17 @@ betaks <- function(u,
 
   }
 
-
   dx       <- abs(lon[2] - lon[1])
   dy       <- abs(lat[2] - lat[1])
   nlat     <- length(lat)
   nlon     <- length(lon)
+
+  # cx
+  if (cx <= 0) {
+    stop(paste0("cx = ", cx,"\nEastwart phase speed must be greater than zero."))
+  }
+  # Transform cx in mercator
+  cx_m <- cx/cos(m_phirad)
 
   # Define parameters and constants
   if(is.unsorted(lat)) {
@@ -163,27 +145,27 @@ betaks <- function(u,
   if(plots) graphics::filled.contour(beta_mercator,
                                      main = "Beta Mercator")
 
-  # Ks mercator #######
-  ks_mercator <- matrix(NA, nrow = nlon, ncol = nlat)
+  # Ktotal mercator #######
+  ktotal_mercator <- matrix(NA, nrow = nlon, ncol = nlat)
 
-  ks_mercator[] <- ifelse(
+  ktotal_mercator[] <- ifelse(
     beta_mercator[] < 0 & u[] != 0, -1,
     ifelse(
       beta_mercator[] > 0 & u[] < 0, 30,
       ifelse(
         beta_mercator[] == 0 | u[] == 0, 0,
         if(show.warnings) {
-          a * sqrt( (beta_mercator * cos(m_phirad)) / u)
+          a * sqrt( (beta_mercator * cos(m_phirad)) / (u - cx_m))
         } else {
-          suppressWarnings(a * sqrt( (beta_mercator*cos(m_phirad)) / u))
+          suppressWarnings(a * sqrt( (beta_mercator*cos(m_phirad)) / (u - cx_m)))
         }
       )))
 
-  ks_mercator[] <- ifelse(ks_mercator[] >= 16 &
-                            ks_mercator[] != 30, 20, ks_mercator[])
+  ktotal_mercator[] <- ifelse(ktotal_mercator[] >= 16 &
+                            ktotal_mercator[] != 30, 20, ktotal_mercator[])
 
-  if(plots) graphics::hist(ks_mercator, main = "Ks")
-  if(plots) graphics::filled.contour(ks_mercator, main = "Ks")
+  if(plots) graphics::hist(ktotal_mercator, main = "Ktotal")
+  if(plots) graphics::filled.contour(ktotal_mercator, main = "Ktotal")
 
   # Adding sf objects ####
   # grid
@@ -199,35 +181,25 @@ betaks <- function(u,
   # Coordinates in x (longitude) are organized from 0 to 360
   # To transform to a spatial object with lat/long coordinates
   # we need to shift the x coordinates to -180 to 180.
-  # The matrix for `u`, `beta_mercator`, and `ks_mercator` are R objects with more
-  # points on y (rows), i.e., those matrix have more rows than columns, or
+  # The matrix for `ktotal_mercator` is an R object with more
+  # points on y (rows), i.e., this matrix have more rows than columns, or
   # longitudes are in y and latitudes on x.
-  # The functions `filled.contour` and `image` read those transposed matrix,
-  # adjusting them automatically on the plot, so we see longitude on x and
-  # latitude on y.
+  # The functions `filled.contour` and `image` read this `ktotal_mercator` transposed
+  # matrix, adjusting them automatically on the plot, so we see longitude on
+  # x and latitude on y.
   # To shift the spatial coordinates of the matrix we need to deal with the
   # rows of our matrix in R in the following way.
 
-  u_sf <- rbind(u[(nrow(u)/2 + 1):nrow(u), ],
-                u[1:(nrow(u)/2), ])
+  ktotal_m_sf <- rbind(ktotal_mercator[(nrow(ktotal_mercator)/2 + 1):nrow(ktotal_mercator), ],
+                  ktotal_mercator[1:(nrow(ktotal_mercator)/2), ])
 
-  betam_sf <- rbind(beta_mercator[(nrow(beta_mercator)/2 + 1):nrow(beta_mercator), ],
-                    beta_mercator[1:(nrow(beta_mercator)/2), ])
-
-  ksm_sf <- rbind(ks_mercator[(nrow(ks_mercator)/2 + 1):nrow(ks_mercator), ],
-                  ks_mercator[1:(nrow(ks_mercator)/2), ])
-
-  sfpoly <- sf::st_sf(data.frame(u = as.vector(u_sf)[1:length(g)],
-                                 betam = as.vector(betam_sf)[1:length(g)],
-                                 ksm = as.vector(ksm_sf)[1:length(g)]),
-              geometry = g,
-              crs = 4326)
+  sfpoly <- sf::st_sf(data.frame(ktotal_m = as.vector(ktotal_m_sf)[1:length(g)]),
+                      geometry = g,
+                      crs = 4326)
 
   if(missing(ofile)){
     return(list(lat = phi,
-                u = u,
-                betam = beta_mercator,
-                ksm = ks_mercator,
+                ktotal_m = ktotal_mercator,
                 sfpoly = sfpoly))
   } else {
     cat("Writting the netcdf in ",ofile,"...\n")
@@ -250,26 +222,15 @@ betaks <- function(u,
                              units = "",
                              dim = list(west_east, south_north),
                              prec = "float")
-    UM <- ncdf4::ncvar_def(name = "u" ,
-                           units = "",
-                           dim = list(west_east, south_north),
-                           prec = "float")
-    BETAM <- ncdf4::ncvar_def(name = "beta_mercator" ,
-                              units = "",
-                              dim = list(west_east, south_north),
-                              prec = "float")
-    KSM <- ncdf4::ncvar_def(name = "ks_mercator" ,
+    KSM <- ncdf4::ncvar_def(name = "ktotal_mercator" ,
                             units = "",
                             dim = list(west_east, south_north),
                             prec = "float")
 
-
     vars_file <- ncdf4::nc_create(filename = ofile,
                                   vars = c(list('XLAT' = XLAT,
                                                 'XLONG' = XLONG,
-                                                'u' = UM,
-                                                'beta_mercator' = BETAM,
-                                                'ks_mercator' = KSM)),
+                                                'ktotal_mercator' = KSM)),
                                   force_v4 = FALSE)
     cat(paste("The file has", vars_file$nvars,"variables\n"))
     cat(paste("The file has", vars_file$ndim,"dimensions\n"))
@@ -352,76 +313,28 @@ betaks <- function(u,
                      varid = "XLAT",
                      attname = "FieldType",
                      attval = 104)
-    # u
+    # Ktotal mercator
     ncdf4::ncvar_put(nc = vars_file,
-                     varid = "u",
-                     vals = u)
+                     varid = "ktotal_mercator",
+                     vals = ktotal_mercator)
     ncdf4::ncatt_put(vars_file,
-                     varid = "u",
+                     varid = "ktotal_mercator",
                      attname = "MemoryOrder",
                      attval = "XYZ")
     ncdf4::ncatt_put(vars_file,
-                     varid = "u",
+                     varid = "ktotal_mercator",
                      attname = "description",
                      attval = "Basic state")
     ncdf4::ncatt_put(vars_file,
-                     varid = "u",
-                     attname = "units",
-                     attval = "m/s")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "u",
-                     attname = "stagger",
-                     attval = "um")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "u",
-                     attname = "FieldType",
-                     attval = 104)
-    # beta_mercator
-    ncdf4::ncvar_put(nc = vars_file,
-                     varid = "beta_mercator",
-                     vals = beta_mercator)
-    ncdf4::ncatt_put(vars_file,
-                     varid = "beta_mercator",
-                     attname = "MemoryOrder",
-                     attval = "XYZ")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "beta_mercator",
-                     attname = "description",
-                     attval = "Basic state")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "beta_mercator",
-                     attname = "units",
-                     attval = "s^-1 m^-1")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "beta_mercator",
-                     attname = "stagger",
-                     attval = "betam")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "beta_mercator",
-                     attname = "FieldType",
-                     attval = 104)
-    # Ks mercator
-    ncdf4::ncvar_put(nc = vars_file,
-                     varid = "ks_mercator",
-                     vals = ks_mercator)
-    ncdf4::ncatt_put(vars_file,
-                     varid = "ks_mercator",
-                     attname = "MemoryOrder",
-                     attval = "XYZ")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "ks_mercator",
-                     attname = "description",
-                     attval = "Basic state")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "ks_mercator",
+                     varid = "ktotal_mercator",
                      attname = "units",
                      attval = "")
     ncdf4::ncatt_put(vars_file,
-                     varid = "ks_mercator",
+                     varid = "ktotal_mercator",
                      attname = "stagger",
                      attval = "betam")
     ncdf4::ncatt_put(vars_file,
-                     varid = "ks_mercator",
+                     varid = "ktotal_mercator",
                      attname = "FieldType",
                      attval = 104)
 
@@ -429,9 +342,7 @@ betaks <- function(u,
 
     # Returning a list with the calculated variables
     return(list(lat = phi,
-                u = u,
-                betam = beta_mercator,
-                ksm = ks_mercator,
+                ktotal_m = ktotal_mercator,
                 sfpoly = sfpoly))
 
   }

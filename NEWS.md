@@ -1,5 +1,17 @@
 NEWS
 ===========
+# TODO
+- Implement function for filter by area of interest
+- Review descriptions in order to substitute "source" by "departure point" or
+  other
+- Implement RWS function
+- Implement WFA function
+- Depreciate function ray
+- Include function for plotting
+
+### raytracing 0.3.0 (Date: 21 aug 2021)
+- Create betam, Ktotal, and Ks function from betaks
+
 ### raytracing 0.2.0 (Date: 23 dez 2020)
 - Add correction for longitudes bigger than 180
 - Add DOI with zenodo in README
