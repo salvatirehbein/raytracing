@@ -112,6 +112,8 @@ betaks <- function(u,
                    ncol = nlat)
 
   # Calculate beta terms
+  # beta (mercator) using eq 2.2 from Hoskins & Ambrizzi (1993)
+  # using spherical coord. x cos phi
   # 1st term: df/dy ####
   dfdy <- matrix(NA,
                  nrow = 1,
@@ -157,13 +159,14 @@ betaks <- function(u,
 
   if(plots) graphics::filled.contour(beta_f[,], main = "Beta")
 
-  # Calculate Beta Mercartor --> beta * cos(phi) #####
+  # Calculate Beta Mercator --> beta * cos(phi) #####
   beta_mercator <- beta_f*cos(m_phirad)
 
   if(plots) graphics::filled.contour(beta_mercator,
                                      main = "Beta Mercator")
 
-  # Ks mercator #######
+  # Ks Mercator #######
+  # Ks (Mercator) using eq 2.13 from Hoskins & Ambrizzi (1993)
   ks_mercator <- matrix(NA, nrow = nlon, ncol = nlat)
 
   ks_mercator[] <- ifelse(

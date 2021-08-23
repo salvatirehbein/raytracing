@@ -70,7 +70,7 @@ Ktotal <- function(u,
 
   # cx
   if (cx <= 0) {
-    stop(paste0("cx = ", cx,"\nEastwart phase speed must be greater than zero."))
+    stop(paste0("cx = ", cx,"\nZonal phase speed (cx) must be greater than zero.\nFor Stationary Waves please use Ks function."))
   }
 
   # Define parameters and constants
@@ -143,8 +143,7 @@ Ktotal <- function(u,
   if(plots) graphics::filled.contour(beta_mercator,
                                      main = "Beta Mercator")
 
-  # Transform cx in mercator
-  cx_m <- cx/cos(m_phirad)
+  cx_m <- cx
 
   # Ktotal mercator #######
   ktotal_mercator <- matrix(NA, nrow = nlon, ncol = nlat)

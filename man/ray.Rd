@@ -14,6 +14,7 @@ ray(
   dt,
   itime,
   direction,
+  cx = 0,
   interpolation = "trin",
   tl = 1,
   a = 6371000,
@@ -49,6 +50,9 @@ times 4 times per day}
 It controls the wave displacement:
 If 1, the wave goes to the north of the source;
 If -1, the wave goes to the south of the source.}
+
+\item{cx}{numeric. Indicates the zonal phase speed. The program is designed
+for eastward propagation (cx > 0) and stationary waves (cx = 0, the default).}
 
 \item{interpolation}{Character. Set the interpolation method to be used:
 \code{\link{trin}} or \code{\link{ypos}}}
@@ -95,6 +99,7 @@ rt <- ray(betam = b$betam,
           y0 = -30,
           dt = 6,
           direction = -1,
+          cx = 0,
           interpolation = "trin")
 rp <- ray_path(rt$lon, rt$lat)
 plot(rp,

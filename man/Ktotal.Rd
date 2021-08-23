@@ -63,7 +63,7 @@ zonal wave number (k). For stationary Rossby Waves, please see \code{\link{Ks}}.
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                       package = "raytracing")
-Ktotal <- Ktotal(u = input, cx = 6, plots = TRUE, ofile = "~/Downloads/betaks.nc")
+Ktotal <- Ktotal(u = input, cx = 6, plots = TRUE)
 cores <- c("#ff0000","#ff5a00","#ff9a00","#ffce00","#f0ff00")
 graphics::filled.contour(Ktotal$ktotal_m[, -c(1:5, 69:73)] ,
                          col = rev(colorRampPalette(cores, bias = 0.5)(20)),
