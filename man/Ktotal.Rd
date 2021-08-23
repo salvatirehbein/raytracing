@@ -51,7 +51,11 @@ If missing, will not return a netCDF file}
 list with one vector (lat) and 1 matrix (ktotal_m)
 }
 \description{
-
+\code{Ktotal} ingests the time-mean zonal wind (u) and calculates the Rossby
+wavenumber (K) (non-zero frequency waves) in mercator coordinates.
+In this code Ktotal is used to distinguish the total wavenumber (K) from
+zonal wave number (k). For stationary Rossby Waves, please see \code{\link{Ks}}.
+\code{Ktotal} returns a list with K in mercator coordinates (ktotal_m).
 }
 \examples{
 {
@@ -59,7 +63,7 @@ list with one vector (lat) and 1 matrix (ktotal_m)
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                       package = "raytracing")
-Ktotal <- Ktotal(u = input, cx = 6, plots = TRUE)
+Ktotal <- Ktotal(u = input, cx = 6, plots = TRUE, ofile = "~/Downloads/betaks.nc")
 cores <- c("#ff0000","#ff5a00","#ff9a00","#ffce00","#f0ff00")
 graphics::filled.contour(Ktotal$ktotal_m[, -c(1:5, 69:73)] ,
                          col = rev(colorRampPalette(cores, bias = 0.5)(20)),

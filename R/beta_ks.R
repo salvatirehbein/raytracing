@@ -234,198 +234,77 @@ betaks <- function(u,
 
     # Write the netcdf ####
     # definition of dimensions
-    west_east <- ncdf4::ncdim_def("west_east",
-                                  units = "",
-                                  vals = 1:nlon)
-    south_north <- ncdf4::ncdim_def("south_north",
-                                    units = "",
-                                    vals = 1:nlat)
+    XLONG <- ncdf4::ncdim_def(name = "longitude",
+                              units = "degrees_east",
+                              vals = lon)
+    XLAT <- ncdf4::ncdim_def(name = "latitude",
+                             units = "degrees_north",
+                             vals = -lat)
 
     # definition of variables
-    XLONG <- ncdf4::ncvar_def(name = "XLONG",
-                              units = "",
-                              dim = list(west_east,south_north),
-                              prec = "float")
-    XLAT <- ncdf4::ncvar_def(name = "XLAT" ,
-                             units = "",
-                             dim = list(west_east, south_north),
-                             prec = "float")
-    UM <- ncdf4::ncvar_def(name = "u" ,
-                           units = "",
-                           dim = list(west_east, south_north),
-                           prec = "float")
-    BETAM <- ncdf4::ncvar_def(name = "beta_mercator" ,
-                              units = "",
-                              dim = list(west_east, south_north),
-                              prec = "float")
-    KSM <- ncdf4::ncvar_def(name = "ks_mercator" ,
+    UWND <- ncdf4::ncvar_def(name = "uwnd",
+                             units = "m s^-1",
+                             dim = list(XLONG, XLAT),
+                             longname="Zonal wind")
+    BETAM <- ncdf4::ncvar_def(name = "betam",
+                              units = "s^-1 m^-1",
+                              dim = list(XLONG, XLAT),
+                              longname="Meridional Gradient of the Absolute Vorticity in mercator coordinates")
+    KSM <- ncdf4::ncvar_def(name = "Ks",
                             units = "",
-                            dim = list(west_east, south_north),
-                            prec = "float")
-
-
+                            dim = list(XLONG, XLAT),
+                            longname = "Stationary Wavenumber (Ks)")
     vars_file <- ncdf4::nc_create(filename = ofile,
-                                  vars = c(list('XLAT' = XLAT,
-                                                'XLONG' = XLONG,
-                                                'u' = UM,
-                                                'beta_mercator' = BETAM,
-                                                'ks_mercator' = KSM)),
-                                  force_v4 = FALSE)
-    cat(paste("The file has", vars_file$nvars,"variables\n"))
-    cat(paste("The file has", vars_file$ndim,"dimensions\n"))
+                                  vars = list(UWND, BETAM, KSM))
+
+    cat(paste("The file has", vars_file$nvars, "variables\n"))
+    cat(paste("The file has", vars_file$ndim, "dimensions\n"))
 
     # Global attribute to the file when varid = 0
     # otherwise write the variable name
-    ncdf4::ncatt_put(vars_file,
+    ncdf4::ncatt_put(nc = vars_file,
                      varid = 0, # 0 para o arquivo
                      attname = "title",
                      attval = "Basic state for calculate ray tracing")
-    ncdf4::ncatt_put(vars_file,
+    ncdf4::ncatt_put(nc = vars_file,
                      varid = 0, # 0 para o arquivo
                      attname = "Author",
                      attval = "")
-    ncdf4::ncatt_put(vars_file,
+    ncdf4::ncatt_put(nc = vars_file,
                      varid = 0, # 0 para o arquivo
                      attname = "institution",
                      attval = "Climate Group of Studies (GrEC)/University of Sao Paulo (USP)")
-    ncdf4::ncatt_put(vars_file,
+    ncdf4::ncatt_put(nc = vars_file,
                      varid = 0, # 0 para o arquivo
                      attname = "title",
                      attval = "Basic state for calculate ray tracing")
-    ncdf4::ncatt_put(vars_file,
+    ncdf4::ncatt_put(nc = vars_file,
                      varid = 0, # 0 para o arquivo
                      attname = "history",
                      attval = paste0("Created on ", Sys.time()))
-    ncdf4::ncatt_put(vars_file,
+    ncdf4::ncatt_put(nc = vars_file,
                      varid = 0, # 0 para o arquivo
                      attname = "references",
                      attval = "See: Hoskins and Ambrizzi (1993), Yang and Hoskins (1996), and Rehbein et al. (2020)")
 
-    # values for the basic variables ####
+    # Add variables to the ofile
     ncdf4::ncvar_put(nc = vars_file,
-                     varid = "XLONG",
-                     vals = matrix(data = lon,
-                                   ncol = nlat,
-                                   nrow = nlon, byrow = FALSE))
-    ncdf4::ncatt_put(vars_file,
-                     varid = "XLONG",
-                     attname = "MemoryOrder",
-                     attval = "XY")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "XLONG",
-                     attname = "description",
-                     attval = "LONGITUDE, 0 to 360")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "XLONG",
-                     attname = "units",
-                     attval = "degree WMO")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "XLONG",
-                     attname = "stagger",
-                     attval = "")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "XLONG",
-                     attname = "FieldType",
-                     attval = 104)
+                     varid = UWND,
+                     vals = u,
+                     start = c(1,1),
+                     count = c(nlon,nlat))
     ncdf4::ncvar_put(nc = vars_file,
-                     varid = "XLAT",
-                     vals = matrix(data = phi,
-                                   ncol = nlat,
-                                   nrow = nlon, byrow = TRUE))
-    ncdf4::ncatt_put(vars_file,
-                     varid = "XLAT",
-                     attname = "MemoryOrder",
-                     attval = "XY")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "XLAT",
-                     attname = "description",
-                     attval = "LATITUDE, SOUTH IS NEGATIVE")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "XLAT",
-                     attname = "units",
-                     attval = "degree north")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "XLAT",
-                     attname = "stagger",
-                     attval = "")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "XLAT",
-                     attname = "FieldType",
-                     attval = 104)
-    # u
+                     varid = BETAM,
+                     vals = beta_mercator,
+                     start = c(1,1),
+                     count = c(nlon,nlat))
     ncdf4::ncvar_put(nc = vars_file,
-                     varid = "u",
-                     vals = u)
-    ncdf4::ncatt_put(vars_file,
-                     varid = "u",
-                     attname = "MemoryOrder",
-                     attval = "XYZ")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "u",
-                     attname = "description",
-                     attval = "Basic state")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "u",
-                     attname = "units",
-                     attval = "m/s")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "u",
-                     attname = "stagger",
-                     attval = "um")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "u",
-                     attname = "FieldType",
-                     attval = 104)
-    # beta_mercator
-    ncdf4::ncvar_put(nc = vars_file,
-                     varid = "beta_mercator",
-                     vals = beta_mercator)
-    ncdf4::ncatt_put(vars_file,
-                     varid = "beta_mercator",
-                     attname = "MemoryOrder",
-                     attval = "XYZ")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "beta_mercator",
-                     attname = "description",
-                     attval = "Basic state")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "beta_mercator",
-                     attname = "units",
-                     attval = "s^-1 m^-1")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "beta_mercator",
-                     attname = "stagger",
-                     attval = "betam")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "beta_mercator",
-                     attname = "FieldType",
-                     attval = 104)
-    # Ks mercator
-    ncdf4::ncvar_put(nc = vars_file,
-                     varid = "ks_mercator",
-                     vals = ks_mercator)
-    ncdf4::ncatt_put(vars_file,
-                     varid = "ks_mercator",
-                     attname = "MemoryOrder",
-                     attval = "XYZ")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "ks_mercator",
-                     attname = "description",
-                     attval = "Basic state")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "ks_mercator",
-                     attname = "units",
-                     attval = "")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "ks_mercator",
-                     attname = "stagger",
-                     attval = "betam")
-    ncdf4::ncatt_put(vars_file,
-                     varid = "ks_mercator",
-                     attname = "FieldType",
-                     attval = 104)
+                     varid = KSM,
+                     vals = ks_mercator,
+                     start = c(1,1),
+                     count = c(nlon,nlat))
 
-    ncdf4::nc_close(vars_file)
+    ncdf4::nc_close(nc = vars_file)
 
     # Returning a list with the calculated variables
     return(list(lat = phi,

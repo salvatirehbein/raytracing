@@ -9,8 +9,9 @@ NEWS
 - Depreciate function ray
 - Include function for plotting
 
-### raytracing 0.3.0 (Date: 21 aug 2021)
+### raytracing 0.3.0 (Date: 22 aug 2021)
 - Create betam, Ktotal, and Ks function from betaks
+- Export netcdf files to be read by GrADS 
 
 ### raytracing 0.2.0 (Date: 23 dez 2020)
 - Add correction for longitudes bigger than 180
