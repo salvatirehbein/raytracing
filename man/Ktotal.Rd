@@ -35,7 +35,7 @@ from 0 to 360. It is required that the read dimensions express longitude
 
 \item{uname}{String indicating the variable name field}
 
-\item{cx}{numeric. Indicates the eastward phase speed. Must be greater than zero.
+\item{cx}{numeric. Indicates the zonal phase speed. Must be greater than zero.
 For cx equal to zero (stationary waves see \code{\link{Ks}})}
 
 \item{ofile}{String indicating the file name for store output data.

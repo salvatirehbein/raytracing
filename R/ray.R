@@ -86,7 +86,9 @@ ray <- function(betam,
                 ofile){
   # cx
   if (cx < 0) {
-    stop(paste0("cx = ", cx,"\nZonal phase speed (cx) must be equal or greater than zero.\nFor westward wave propagations, please contact the developer (amanda.rehbein@usp.br) "))
+    stop(paste0("cx = ", cx,"\nZonal phase speed (cx) must be equal or greater than zero.\n",
+                "For westward wave propagations, please contact the developer\n",
+                "(amanda.rehbein@usp.br)"))
   }
 
   if(abs(x0) > 180) {
@@ -135,7 +137,11 @@ ray <- function(betam,
 
     }
 
-    Ks2_y0 <- beta_y0/(u_y0 - cx)
+    # Transform cx in mercator
+    cx_y0 <- cx/cos(y0*pi/180)
+
+
+    Ks2_y0 <- beta_y0/(u_y0 - cx_y0)
     l2_y0 <- Ks2_y0 - k2
 
     ## Skip to the next timestep
@@ -144,9 +150,9 @@ ray <- function(betam,
      if(round(l2_y0, 13) <= 0) tl <- -1
 
     # Break 2
-    if(u_y0 == cx | Ks2_y0 < 0) break
+    if(u_y0 == cx_y0 | Ks2_y0 < 0) break
 
-    ug0 <-(cx + 2 * beta_y0 * k2 / Ks2_y0^2 ) * 180 / (a*pi)
+    ug0 <-(cx_y0 + 2 * beta_y0 * k2 / Ks2_y0^2 ) * 180 / (a*pi)
 
     vg0 <- (direction * tl *
               2 * beta_y0 * k * sqrt(abs(l2_y0))*
@@ -166,7 +172,10 @@ ray <- function(betam,
 
     }
 
-    Ks2_y1 <- beta_y1/(u_y1 - cx)
+    # Transform cx in mercator
+    cx_y1 <- cx/cos(y1*pi/180)
+
+    Ks2_y1 <- beta_y1/(u_y1 - cx_y1)
     l2_y1 <- Ks2_y1 - k2
 
     # Skip to the next timestep
@@ -175,9 +184,9 @@ ray <- function(betam,
     if(round(l2_y1, 13) < 0) tl <- -1
 
     # Break 3
-    if(u_y1 == cx | Ks2_y1  < 0) break
+    if(u_y1 == cx_y1 | Ks2_y1  < 0) break
 
-    ug1 <-  (cx + 2 * beta_y1 * k2 / Ks2_y1^2 ) * 180 / (a*pi)
+    ug1 <-  (cx_y1 + 2 * beta_y1 * k2 / Ks2_y1^2 ) * 180 / (a*pi)
 
     vg1 <- (direction * tl *
               2 * beta_y1 * k * sqrt(abs(l2_y1))*

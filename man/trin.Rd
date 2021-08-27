@@ -24,7 +24,7 @@ This function performs trigonometric interpolation for the
 passed basic state variable and the requested latitude
 }
 \note{
-This function is an alternative to \code{\link{ypos}}
+This function is an alternative to \code{\link{ypos}} and is more accurate
 }
 \examples{
 {

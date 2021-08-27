@@ -11,6 +11,7 @@ ray_source(
   x0,
   y0,
   K,
+  cx,
   dt,
   itime,
   direction,
@@ -39,6 +40,9 @@ coordinates inside the \code{ray}}
 \item{y0}{Vector with the initial latitudes}
 
 \item{K}{Vector; Total Rossby wavenumber}
+
+\item{cx}{numeric. Indicates the zonal phase speed. The program is designed
+for eastward propagation (cx > 0) and stationary waves (cx = 0, the default).}
 
 \item{dt}{Numeric value; Timestep for integration (hours)}
 
@@ -93,6 +97,7 @@ rt <- ray_source(betam = b$betam,
                  lat = b$lat,
                  K = 3,
                  itime = 10*4,
+                 cx = 0,
                  x0 = -c(130, 135),
                  y0 = -30,
                  dt = 6,

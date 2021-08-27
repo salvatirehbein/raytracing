@@ -52,7 +52,7 @@ list with one vector (lat) and 2 matrices (u and betam)
 \code{betam} ingests the time-mean zonal wind (u), transform it in
 mercator coordinates (um) and then calculates the meridional gradient of
 the absolute vorticity (beta) in mercator coordinates (betam) using
-equation Karoly (1983). \code{beta} returns a list with the \strong{u},
+equation Karoly (1983). \code{betam} returns a list with the \strong{u},
 \strong{betam}, and \strong{lat} for being ingested in \code{\link{ktotal}},
 \code{\link{ks}}, \code{\link{ray}} or \code{\link{ray_source}}.
 }

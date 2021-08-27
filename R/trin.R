@@ -12,7 +12,7 @@
 #' in mercator coordinates? Default is FALSE.
 #' @seealso \code{\link{ypos}} \code{\link{ray}}  \code{\link{ray_source}}
 #' @return Numeric value
-#' @note This function is an alternative to \code{\link{ypos}}
+#' @note This function is an alternative to \code{\link{ypos}} and is more accurate
 #' @export
 #' @examples {
 #' input <- system.file("extdata",

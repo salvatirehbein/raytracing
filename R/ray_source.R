@@ -24,6 +24,8 @@
 #' @param lat Numeric vector of latitudes from minor to major
 #'  (ex: -90 to 90). Obtained with \code{\link{betaks}}
 #' @param K Vector; Total Rossby wavenumber
+#' @param cx numeric. Indicates the zonal phase speed. The program is designed
+#' for eastward propagation (cx > 0) and stationary waves (cx = 0, the default).
 #' @param dt Numeric value; Timestep for integration (hours)
 #' @param itime Numeric value; total integration time. For instance, 10 days
 #' times 4 times per day
@@ -55,6 +57,7 @@
 #'                  lat = b$lat,
 #'                  K = 3,
 #'                  itime = 10*4,
+#'                  cx = 0,
 #'                  x0 = -c(130, 135),
 #'                  y0 = -30,
 #'                  dt = 6,
@@ -80,6 +83,7 @@ ray_source <- function(betam,
                        x0,
                        y0,
                        K,
+                       cx,
                        dt,
                        itime,
                        direction,
@@ -102,6 +106,7 @@ ray_source <- function(betam,
                   lat = lat,
                   itime = itime,
                   K = wn[k],
+                  # cx = cx,
                   dt = dt,
                   direction = dir[i],
                   interpolation = interpolation,

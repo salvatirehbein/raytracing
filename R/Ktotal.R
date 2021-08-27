@@ -22,7 +22,7 @@
 #' \strong{u} is a matrix, \strong{lat} must be numeric
 #' @param lon String indicating the name of the longitude field.If
 #' \strong{u} is a matrix, \strong{lon} must be numeric from 0 to 360.
-#' @param cx numeric. Indicates the eastward phase speed. Must be greater than zero.
+#' @param cx numeric. Indicates the zonal phase speed. Must be greater than zero.
 #' For cx equal to zero (stationary waves see \code{\link{Ks}})
 #' @param a Numeric indicating the Earth's radio (m)
 #' @param plots Logical, if TRUE will produce filled.countour plots
@@ -143,7 +143,7 @@ Ktotal <- function(u,
   if(plots) graphics::filled.contour(beta_mercator,
                                      main = "Beta Mercator")
 
-  cx_m <- cx
+  #cx_m <- cx/(cos(m_phirad))
 
   # Ktotal mercator #######
   ktotal_mercator <- matrix(NA, nrow = nlon, ncol = nlat)
@@ -155,9 +155,9 @@ Ktotal <- function(u,
       ifelse(
         beta_mercator[] == 0 | u[] == 0, 0,
         if(show.warnings) {
-          a * sqrt( (beta_mercator * cos(m_phirad)) / (u - cx_m))
+          a * sqrt( (beta_mercator * cos(m_phirad)) / (u - cx))
         } else {
-          suppressWarnings(a * sqrt( (beta_mercator*cos(m_phirad)) / (u - cx_m)))
+          suppressWarnings(a * sqrt( (beta_mercator*cos(m_phirad)) / (u - cx)))
         }
       )))
 
