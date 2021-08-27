@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 [![Codecov test coverage](https://codecov.io/gh/salvatirehbein/raytracing/branch/master/graph/badge.svg)](https://codecov.io/gh/salvatirehbein/raytracing?branch=master)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/raytracing?color=orange)](http://cran.r-project.org/package=raytracing)
 [![DOI](https://zenodo.org/badge/295589682.svg)](https://zenodo.org/badge/latestdoi/295589682)
+[![R build status](https://github.com/salvatirehbein/raytracing/workflows/R-CMD-check/badge.svg)](https://github.com/salvatirehbein/raytracing/actions)
 
 ## Raytracing Documentation
 
