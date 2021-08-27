@@ -1,11 +1,10 @@
 raytracing
 ================
 
-[![Travis-CI Build
-Status](https://img.shields.io/travis/com/salvatirehbein/raytracing?style=for-the-badge)](https://travis-ci.com/github/salvatirehbein/raytracing)
 [![Codecov test
 coverage](https://codecov.io/gh/salvatirehbein/raytracing/branch/master/graph/badge.svg)](https://codecov.io/gh/salvatirehbein/raytracing?branch=master)
-[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/raytracing?color=orange)](http://cran.r-project.org/package=raytracing)
+[![CRAN
+Downloads](http://cranlogs.r-pkg.org/badges/grand-total/raytracing?color=orange)](http://cran.r-project.org/package=raytracing)
 [![DOI](https://zenodo.org/badge/295589682.svg)](https://zenodo.org/badge/latestdoi/295589682)
 
 ## Raytracing Documentation
@@ -66,7 +65,7 @@ Simple usage example, reproduced from [Coelho et
 al. (2015)](https://link.springer.com/article/10.1007/s00382-015-2800-1).
 
 ``` r
-library(raytracing, quietly = TRUE)
+library(raytracing)
 input <- system.file("extdata",
                      "uwnd.mon.mean_200hPa_2014JFM.nc",
                      package = "raytracing")
@@ -83,6 +82,11 @@ rt <- ray_source(betam = b$betam,
                  interpolation = "trin")
 ```
 
+    ## 
+    ## K = 3  lat = -30   lon = -130 
+    ## 
+    ## K = 3  lat = -30   lon = -135
+
 The `ray` or the `ray_source` functions return a `sf` `data.table` as
 below:
 
@@ -91,10 +95,10 @@ head(rt)
 ```
 
     ## Simple feature collection with 6 features and 10 fields
-    ## geometry type:  POINT
-    ## dimension:      XY
-    ## bbox:           xmin: -130 ymin: -49.98866 xmax: -106.6441 ymax: -30
-    ## geographic CRS: WGS 84
+    ## Geometry type: POINT
+    ## Dimension:     XY
+    ## Bounding box:  xmin: -130 ymin: -49.98866 xmax: -106.6441 ymax: -30
+    ## Geodetic CRS:  WGS 84
     ##   K lat_ini lon_ini time iday       lat       lon lon_shift                  id
     ## 1 3     -30    -130    0    0 -30.00000 -130.0000  230.0000 K3_lati-30_loni-130
     ## 2 3     -30    -130    6    6 -32.47862 -128.5935  231.4065 K3_lati-30_loni-130
@@ -115,10 +119,10 @@ tail(rt)
 ```
 
     ## Simple feature collection with 6 features and 10 fields (with 1 geometry empty)
-    ## geometry type:  LINESTRING
-    ## dimension:      XY
-    ## bbox:           xmin: -43.27348 ymin: -17.45744 xmax: -43.17391 ymax: -16.92884
-    ## geographic CRS: WGS 84
+    ## Geometry type: LINESTRING
+    ## Dimension:     XY
+    ## Bounding box:  xmin: -43.27348 ymin: -17.45744 xmax: -43.17391 ymax: -16.92884
+    ## Geodetic CRS:  WGS 84
     ##     K lat_ini lon_ini time iday       lat       lon lon_shift
     ## 159 3     -30    -135  210   18 -17.45744 -43.27348  316.7265
     ## 160 3     -30    -135  216    0 -17.33805 -43.25002  316.7500
@@ -161,8 +165,9 @@ plot(li["lon_ini"],
     pal = colorRampPalette(c("black", "blue")))
 ```
 
-![](README_files/figure-gfm/plot-1.png)<!-- --> This figure is a
-reproduction of the Figure 9 from [Coelho et
+![](README_files/figure-gfm/plot-1.png)<!-- -->
+
+This figure is a reproduction of the Figure 9 from [Coelho et
 al. (2015)](https://link.springer.com/article/10.1007/s00382-015-2800-1).
 
 ## citation
