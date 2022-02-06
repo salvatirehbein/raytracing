@@ -53,8 +53,8 @@ list with one vector (lat) and 2 matrices (u and betam)
 mercator coordinates (um) and then calculates the meridional gradient of
 the absolute vorticity (beta) in mercator coordinates (betam) using
 equation Karoly (1983). \code{betam} returns a list with the \strong{u},
-\strong{betam}, and \strong{lat} for being ingested in \code{\link{ktotal}},
-\code{\link{ks}}, \code{\link{ray}} or \code{\link{ray_source}}.
+\strong{betam}, and \strong{lat} for being ingested in \code{\link{Ktotal}},
+\code{\link{Ks}}, \code{\link{ray}} or \code{\link{ray_source}}.
 }
 \examples{
 {

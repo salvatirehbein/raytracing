@@ -93,8 +93,14 @@ ray_source <- function(betam,
                        verbose = FALSE,
                        ofile){
   # combine the x0 and y0:
-  df <- expand.grid(x0, y0)
-  names(df) <- c("lon", "lat")
+  # df <- expand.grid(x0, y0)
+  # names(df) <- c("lon", "lat")
+  df <- data.frame(lon = x0,
+                   lat = y0)
+  cat("\nInitial Poits at: \n")
+  print(df)
+
+
   dir <- direction
   wn <- K
 

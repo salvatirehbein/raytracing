@@ -8,6 +8,11 @@ NEWS
 - Implement WFA function
 - Depreciate function ray
 - Include function for plotting
+- Export uwnd in beta and betaks with lat/lon in ascending order
+
+### raytracing 0.4.0 (Date: 06 feb 2022)
+- Substitute "expand.grid" by "data.frame" in ray_source function
+- fix bugs in documentation
 
 ### raytracing 0.3.0 (Date: 22 aug 2021)
 - Create betam, Ktotal, and Ks function from betaks

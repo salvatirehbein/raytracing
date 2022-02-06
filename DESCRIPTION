@@ -1,6 +1,6 @@
 Package: raytracing
 Title: Rossby Wave Ray Tracing
-Version: 0.3.0
+Version: 0.4.0
 Date: 2020-10-22
 Authors@R: c(person(given = "Amanda",
                     family = "Rehbein",
