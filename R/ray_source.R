@@ -45,6 +45,7 @@
 #' during compilation
 #' @return  sf data.frame
 #' @importFrom sf st_as_sf st_set_geometry
+#' @importFrom utils write.csv
 #' @export
 #' @examples \dontrun{
 #' #do not run
@@ -152,7 +153,7 @@ ray_source <- function(betam,
     DF <- do.call("rbind", ddir)
 
     if(!missing(ofile)) {
-      saveRDS(object = DF, file = ofile)
+      write.csv(x = DF, file = ofile)
     }
     return(DF)
 }

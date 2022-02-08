@@ -44,6 +44,7 @@
 #' @seealso \code{\link{ray_source}}
 #' @return sf data.frame
 #' @importFrom sf st_as_sf
+#' @importFrom utils write.csv
 #' @export
 #' @examples {
 #' # For Coelho et al. (2015):
@@ -227,7 +228,7 @@ ray <- function(betam,
                          crs = 4326)
 
   if(!missing(ofile)) {
-    saveRDS(object = pontos, file = ofile)
+    write.csv(x = pontos, file = ofile)
   }
   return(pontos)
 }

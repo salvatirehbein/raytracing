@@ -1,7 +1,7 @@
 NEWS
 ===========
 # TODO
-- Implement function for filter by area of interest
+
 - Review descriptions in order to substitute "source" by "departure point" or
   other
 - Implement RWS function
@@ -9,6 +9,10 @@ NEWS
 - Depreciate function ray
 - Include function for plotting
 - Export uwnd in beta and betaks with lat/lon in ascending order
+
+### raytracing 0.5.0 (Date: 08 feb 2022)
+- Implement function for filter by area of interest (wave_arrival)
+- ray and ray_source functions now exports in csv instead of RDS.
 
 ### raytracing 0.4.0 (Date: 06 feb 2022)
 - Substitute "expand.grid" by "data.frame" in ray_source function
