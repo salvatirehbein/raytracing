@@ -5,7 +5,7 @@
 #'
 #' @format Geometry of coastlines "sfc_MULTILINESTRING"
 #' \describe{
-#'   \item{}{Geometry of coastlines "sfc_MULTILINESTRING"}
+#'   \item{MULTILINESTRING}{Geometry of coastlines "sfc_MULTILINESTRING"}
 #'   data(coastlines)
 ##' }
 #' @source \url{https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-coastline/}
